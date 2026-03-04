@@ -97,6 +97,7 @@ class ActivityResource extends Resource
 
                                 Forms\Components\Select::make('unit')
                                     ->label('Unit Kerja')
+                                    ->required()
                                     ->options(Unit::class)
                                     ->placeholder('Pilih Unit...')
                                     ->prefixIcon('heroicon-o-building-office')

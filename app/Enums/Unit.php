@@ -6,6 +6,7 @@ use Filament\Support\Contracts\HasLabel;
 
 enum Unit: string implements HasLabel
 {
+    case UMUM = 'umum';
     case SETJEN = 'setjen';
     case ITJEN = 'itjen';
     case DIT_PDK = 'dit_pdk';
@@ -14,6 +15,7 @@ enum Unit: string implements HasLabel
     public function label(): string
     {
         return match ($this) {
+            self::UMUM => 'UMUM',
             self::SETJEN => 'SETJEN',
             self::ITJEN => 'ITJEN',
             self::DIT_PDK => 'DIT PDK',
