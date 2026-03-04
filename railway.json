@@ -4,7 +4,7 @@
         "builder": "NIXPACKS"
     },
     "deploy": {
-        "startCommand": "php artisan migrate --force && php artisan storage:link && php artisan config:cache && php artisan route:cache && php artisan serve --host=0.0.0.0 --port=$PORT",
+        "startCommand": "chmod +x start.sh && bash start.sh",
         "restartPolicyType": "ON_FAILURE"
     }
 }
