@@ -9,5 +9,5 @@ php artisan filament:assets || true
 echo "=== Storage link ==="
 php artisan storage:link || true
 
-echo "=== Starting PHP server on port ${PORT:-8080} with router ==="
-php -S 0.0.0.0:${PORT:-8080} server.php
+echo "=== Starting server on port ${PORT:-8080} ==="
+php artisan serve --host=0.0.0.0 --port=${PORT:-8080} --no-reload
