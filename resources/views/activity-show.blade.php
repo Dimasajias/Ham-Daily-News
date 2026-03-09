@@ -112,7 +112,10 @@
             position: relative;
             width: 100%;
             overflow: hidden;
-            background: linear-gradient(160deg, var(--primary-dark), var(--primary));
+            background: var(--gray-900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .article-hero img {
@@ -121,33 +124,6 @@
             max-height: 620px;
             object-fit: contain;
             display: block;
-            background: var(--gray-900);
-        }
-
-        .article-hero-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 65%;
-            background: linear-gradient(
-                to top,
-                rgba(15, 23, 42, 0.92) 0%,
-                rgba(15, 23, 42, 0.6) 40%,
-                transparent 100%
-            );
-            pointer-events: none;
-        }
-
-        .article-hero-content {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 2.5rem;
-            max-width: 900px;
-            margin: 0 auto;
-            z-index: 2;
         }
 
         .no-image-hero {
@@ -181,7 +157,7 @@
             border-radius: 50%;
         }
 
-        /* ──── Meta Tags (on hero) ──── */
+        /* ──── Meta Tags ──── */
         .hero-meta {
             display: flex;
             flex-wrap: wrap;
@@ -199,14 +175,13 @@
             font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 0.02em;
-            backdrop-filter: blur(10px);
         }
-        .platform-instagram { color: #fff; background: rgba(225,48,108,0.7); }
-        .platform-tiktok { color: #fff; background: rgba(255,255,255,0.15); }
-        .platform-twitter { color: #fff; background: rgba(255,255,255,0.15); }
-        .platform-facebook { color: #fff; background: rgba(24,119,242,0.6); }
-        .platform-youtube { color: #fff; background: rgba(255,0,0,0.5); }
-        .platform-other { color: #fff; background: rgba(255,255,255,0.15); }
+        .platform-instagram { color: #e1306c; background: rgba(225,48,108,0.08); }
+        .platform-tiktok { color: #111; background: rgba(0,0,0,0.04); }
+        .platform-twitter { color: #111; background: rgba(0,0,0,0.04); }
+        .platform-facebook { color: #1877F2; background: rgba(24,119,242,0.08); }
+        .platform-youtube { color: #FF0000; background: rgba(255,0,0,0.08); }
+        .platform-other { color: var(--gray-600); background: var(--gray-100); }
 
         .tag-office {
             display: inline-flex;
@@ -216,24 +191,22 @@
             border-radius: 8px;
             font-size: 0.72rem;
             font-weight: 600;
-            background: rgba(200,169,81,0.2);
-            color: var(--accent-light);
-            backdrop-filter: blur(10px);
+            background: var(--accent-50);
+            color: var(--accent-dark);
         }
 
         .hero-title {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: 800;
-            line-height: 1.3;
-            color: #fff;
+            line-height: 1.4;
+            color: var(--gray-900);
             letter-spacing: -0.02em;
-            text-shadow: 0 2px 16px rgba(0,0,0,0.2);
         }
 
         .hero-date {
             margin-top: 0.75rem;
             font-size: 0.82rem;
-            color: rgba(255,255,255,0.5);
+            color: var(--gray-400);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -248,15 +221,10 @@
         /* ──── Article Body ──── */
         .article-container {
             max-width: 900px;
-            margin: -2rem auto 0;
-            padding: 0 2rem 4rem;
+            margin: 0 auto;
+            padding: 2rem 2rem 4rem;
             position: relative;
             z-index: 3;
-        }
-
-        .article-container.no-overlap {
-            margin-top: 0;
-            padding-top: 2rem;
         }
 
         /* ──── Description Section ──── */
@@ -811,19 +779,6 @@
         <!-- ═══════ HERO IMAGE ═══════ -->
         <div class="article-hero">
             <img src="{{ $imageUrl }}" alt="{{ Str::limit($activity->extracted_title, 80) }}">
-            <div class="article-hero-overlay"></div>
-            <div class="article-hero-content">
-                <div class="hero-meta">
-                    <span class="platform-badge platform-{{ strtolower($activity->platform?->value ?? 'other') }}">
-                        {{ $activity->platform?->icon() }} {{ $activity->platform?->label() }}
-                    </span>
-                </div>
-                <h1 class="hero-title">{{ $activity->extracted_title ?? 'Kegiatan Kementerian HAM' }}</h1>
-                <div class="hero-date">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
-                    {{ $activity->approved_at?->isoFormat('D MMMM YYYY, HH:mm') ?? '-' }}
-                </div>
-            </div>
         </div>
     @else
         <!-- ═══════ NO IMAGE HERO ═══════ -->
@@ -833,22 +788,23 @@
     @endif
 
     <!-- ═══════ ARTICLE CONTENT ═══════ -->
-    <div class="article-container {{ !$hasImage ? 'no-overlap' : '' }}">
+    <div class="article-container">
 
-        @if(!$hasImage)
-            <div class="title-card">
-                <h1>{{ $activity->extracted_title ?? 'Kegiatan Kementerian HAM' }}</h1>
-                <div class="title-meta">
-                    <span class="platform-badge platform-{{ strtolower($activity->platform?->value ?? 'other') }}">
-                        {{ $activity->platform?->icon() }} {{ $activity->platform?->label() }}
-                    </span>
-                    <span class="hero-date">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
-                        {{ $activity->approved_at?->isoFormat('D MMMM YYYY, HH:mm') ?? '-' }}
-                    </span>
-                </div>
+        <!-- Title Card (always shown below image) -->
+        <div class="title-card">
+            <div class="hero-meta">
+                <span class="platform-badge platform-{{ strtolower($activity->platform?->value ?? 'other') }}">
+                    {{ $activity->platform?->icon() }} {{ $activity->platform?->label() }}
+                </span>
             </div>
-        @endif
+            <h1 class="hero-title">{{ $activity->extracted_title ?? 'Kegiatan Kementerian HAM' }}</h1>
+            <div class="hero-date">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+                {{ $activity->approved_at?->isoFormat('D MMMM YYYY, HH:mm') ?? '-' }}
+            </div>
+        </div>
+
+
 
 
         @if($activity->description)
