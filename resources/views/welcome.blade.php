@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAM DAILY NEWS (HAMDANS) — Portal Kegiatan Harian Kemenham</title>
+    <link rel="icon" href="{{ asset('images/logo_kemenham.png') }}" type="image/png">
     <meta name="description" content="Portal agregasi kegiatan harian Kementerian Hak Asasi Manusia dari seluruh Kantor Wilayah di Indonesia.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -50,343 +51,176 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ──── Navbar ──── */
-        .navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            height: 64px;
-            padding: 0 2rem;
+        @include("partials.navbar-css")
+        /* ════════ HERO ════════ */
+        .hero {
+            padding: 120px 2rem 80px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.2) 0%, rgba(238, 242, 247, 0.15) 100%), url('{{ asset('images/background1.png') }}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: auto;
+            border-bottom: 1px solid var(--gray-200);
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(10,43,107,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255,255,255,0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 0.5px solid rgba(10,43,107,0.06);
-            transition: all 0.4s ease;
+            text-align: left;
+            gap: 4rem;
+            padding: 2rem 0;
         }
 
-        .navbar.scrolled {
-            box-shadow: 0 4px 24px rgba(10,43,107,0.06);
-            background: rgba(255,255,255,0.97);
+        .hero-content {
+            flex: 1;
+            max-width: 680px;
+            animation: heroFadeIn 0.7s ease both;
         }
 
-        .navbar-brand {
-            display: flex;
+        .hero-eyebrow {
+            display: inline-flex;
             align-items: center;
             gap: 10px;
-            text-decoration: none;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #4A90D9;
+            background: rgba(74, 144, 217, 0.08);
+            border: 1px solid rgba(74, 144, 217, 0.15);
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-bottom: 2rem;
+            width: fit-content;
+        }
+        .hero-eyebrow::before {
+            content: '';
+            width: 5px; height: 5px;
+            background: #4A90D9;
+            border-radius: 50%;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
         }
 
-        .navbar-logo {
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
+        .hero-title {
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 900;
+            color: #071E4A;
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+            margin-bottom: 1.5rem;
         }
-
-        .navbar-title {
-            font-size: 1.15rem;
-            font-weight: 500;
-            color: var(--primary);
-        }
-
-        .navbar-title .highlight {
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        .hero-title span {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        .btn-login {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 22px;
-            border-radius: 10px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            text-decoration: none;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
-            border: none;
-            transition: all 0.25s ease;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(10, 43, 107, 0.35);
-        }
-
-        .navbar-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .lang-toggle {
-            display: inline-flex;
-            align-items: center;
-            height: 36px;
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1.5px solid var(--gray-200);
-            background: var(--white);
-            cursor: pointer;
-            font-family: inherit;
-            padding: 0;
-        }
-
-        .lang-toggle .lang-opt {
-            padding: 0 12px;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--gray-400);
-            transition: all 0.2s ease;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            letter-spacing: 0.03em;
-        }
-
-        .lang-toggle .lang-opt.active {
-            background: var(--primary);
-            color: var(--white);
-        }
-
-        /* ──── Hero ──── */
-        /* ════════ HERO ════════ */
-        .hero {
-            padding: 180px 2rem 180px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            background: #060E1F;
-            min-height: 540px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: 0;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            pointer-events: none;
-            opacity: 0.2;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(180deg, 
-                rgba(6, 14, 31, 0.6) 0%, 
-                rgba(10, 27, 58, 0.75) 40%,
-                rgba(10, 43, 107, 0.5) 80%,
-                rgba(6, 14, 31, 0.95) 100%);
-            z-index: 1;
-        }
-
-        .hero-glow {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            border-radius: 50%;
-            filter: blur(120px);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .hero-glow-1 {
-            top: -100px;
-            right: -100px;
-            background: rgba(10, 43, 107, 0.25);
-        }
-
-        .hero-glow-2 {
-            bottom: -150px;
-            left: -100px;
-            background: rgba(200, 169, 81, 0.1);
-        }
-
-        .hero-inner {
-            max-width: 760px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 18px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: rgba(255, 255, 255, 0.8);
-            border-radius: 50px;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-bottom: 1.75rem;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        .hero-badge .dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--accent-light);
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.4); }
-        }
-
-        .hero-logo {
-            height: 200px;
-            max-width: 100%;
-            width: auto;
-            margin: 0 auto 1.5rem auto;
-            display: block;
-            filter: brightness(0) invert(1);
-            opacity: 0.95;
-            animation: heroFadeIn 0.8s ease both;
-        }
-
         @keyframes heroFadeIn {
             from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 0.95; transform: translateY(0); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .hero-tagline {
-            font-size: clamp(0.85rem, 2vw, 1rem);
+            font-size: 1.1rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.55);
-            max-width: 560px;
-            margin: 0 auto;
-            line-height: 1.85;
-            animation: heroFadeIn 0.8s ease 0.15s both;
+            color: #ffffff;
+            max-width: 100%;
+            line-height: 1.8;
+            margin: 0 0 2.5rem 0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.15);
         }
 
-        .hero-accent-line {
-            width: 48px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            margin: 1.5rem auto;
-            border-radius: 2px;
-            opacity: 0.6;
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            background: #071E4A;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(7, 30, 74, 0.2);
         }
+        .hero-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(10,43,107,0.35);
+        }
+        .hero-cta svg { width: 16px; height: 16px; }
 
         /* Stats */
         .stats-row {
             display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-top: 4.5rem;
-            max-width: 520px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: heroFadeIn 0.8s ease 0.3s both;
+            flex-direction: column;
+            gap: 1.25rem;
+            width: auto;
+            flex-shrink: 0;
+            animation: heroFadeIn 0.7s ease 0.15s both;
         }
 
         .stat {
-            flex: 1;
-            padding: 1.25rem 1rem 1rem;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 420px;
+            padding: 1.5rem 2rem;
+            text-align: left;
+            background: var(--white);
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: default;
-        }
-
-        .stat::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
         }
 
         .stat:hover {
             transform: translateY(-4px);
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(200, 169, 81, 0.2);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.3);
-        }
-
-        .stat:hover::before {
-            opacity: 1;
+            box-shadow: 0 15px 35px rgba(7, 30, 74, 0.08);
         }
 
         .stat-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 11px;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 0.7rem;
-            position: relative;
+            flex-shrink: 0;
+            background: #EDF5FF;
+            color: #071E4A;
         }
 
-        .stat-icon svg {
-            width: 18px;
-            height: 18px;
-            position: relative;
-            z-index: 1;
-        }
+        .stat:nth-child(2) .stat-icon { background: rgba(200, 169, 81, 0.12); color: #B38F2B; }
+        .stat:nth-child(3) .stat-icon { background: rgba(16, 185, 129, 0.1); color: #059669; }
 
-        .stat:nth-child(1) .stat-icon {
-            background: linear-gradient(135deg, #0A2B6B, #1a4494);
-            color: #ffffff;
-            box-shadow: 0 6px 16px rgba(10, 43, 107, 0.4);
-        }
-
-        .stat:nth-child(2) .stat-icon {
-            background: linear-gradient(135deg, #C8A951, #e0c46a);
-            color: #ffffff;
-            box-shadow: 0 6px 16px rgba(200, 169, 81, 0.4);
-        }
-
-        .stat:nth-child(3) .stat-icon {
-            background: linear-gradient(135deg, #10b981, #34d399);
-            color: #ffffff;
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
-        }
-
-        .stat:hover .stat-icon {
-            transform: scale(1.08);
-            transition: transform 0.3s ease;
-        }
-
-        .stat:hover {
-            transform: translateY(-3px);
-            transition: transform 0.3s ease;
-        }
+        .stat-icon svg { width: 22px; height: 22px; }
 
         a.stat-link {
             text-decoration: none;
@@ -394,50 +228,24 @@
             display: contents;
         }
 
+        .stat-text { display: flex; flex-direction: column; }
+
         .stat-num {
-            font-size: 1.85rem;
+            font-size: 2rem;
             font-weight: 800;
-            color: #ffffff;
-            -webkit-text-fill-color: #ffffff;
-            background: none;
-            line-height: 1.1;
-            margin-bottom: 0.15rem;
+            color: #1a1a1a;
+            line-height: 1;
+            margin-bottom: 2px;
         }
 
         .stat-label {
-            font-size: 0.63rem;
-            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.72rem;
+            color: #888;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-top: 2px;
+            letter-spacing: 0.04em;
         }
 
-        .stat + .stat {
-            border-left: none;
-        }
-
-        /* Hero bottom fade */
-        .hero-fade {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 80px;
-            background: linear-gradient(
-                to bottom,
-                transparent 0%,
-                rgba(248, 250, 252, 0.08) 15%,
-                rgba(248, 250, 252, 0.22) 30%,
-                rgba(248, 250, 252, 0.42) 45%,
-                rgba(248, 250, 252, 0.64) 60%,
-                rgba(248, 250, 252, 0.84) 75%,
-                rgba(248, 250, 252, 0.95) 88%,
-                #F8FAFC 100%
-            );
-            z-index: 2;
-            pointer-events: none;
-        }
 
         /* ──── Filters ──── */
         .filter-section {
@@ -597,6 +405,32 @@
             background: var(--gray-50);
         }
 
+        .btn-export {
+            height: 46px;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            font-family: inherit;
+            background: #1D6F42; /* Excel Green */
+            color: #fff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 12px rgba(29, 111, 66, 0.2);
+        }
+
+        .btn-export:hover {
+            background: #155231;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(29, 111, 66, 0.3);
+            color: #fff;
+        }
+
+        .btn-export svg { width: 16px; height: 16px; }
+
         .filter-dropdown {
             max-height: 0;
             overflow: hidden;
@@ -613,7 +447,7 @@
 
         .filter-dropdown-inner {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 14px;
             padding: 20px;
             background: var(--gray-50);
@@ -769,184 +603,95 @@
             box-shadow: 0 2px 8px rgba(10,43,107,0.08);
         }
 
-        /* ════════ CARDS ════════ */
-        .card-grid {
+        /* ──── IG FEED ──── */
+        .ig-feed-container {
+            max-width: 1000px;
+            margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.25rem;
+            gap: 24px;
+            padding-bottom: 2rem;
         }
 
-        .card-grid.list-view {
-            grid-template-columns: 1fr;
-        }
-
-        .activity-card {
+        .ig-post {
             background: var(--white);
-            border-radius: 16px;
-            border: 0.5px solid rgba(10, 43, 107, 0.06);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
             text-decoration: none;
             color: inherit;
-            display: flex;
-            flex-direction: row;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 2px 8px rgba(10, 43, 107, 0.03);
-            height: 100%;
-            position: relative;
         }
 
-        .activity-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: 0;
-            background: linear-gradient(180deg, var(--primary), var(--accent));
-            transition: width 0.3s ease;
-            z-index: 2;
-            border-radius: 16px 0 0 16px;
-        }
-
-        .activity-card:hover {
-            border-color: rgba(10, 43, 107, 0.12);
-            box-shadow: 0 12px 40px rgba(10, 43, 107, 0.1), 0 4px 12px rgba(0,0,0,0.02);
-            transform: translateY(-4px);
-        }
-
-        .activity-card:hover::before {
-            width: 4px;
-        }
-
-        .card-thumb {
-            position: relative;
-            width: 35%;
-            overflow: hidden;
-            background: var(--gray-50);
-            flex-shrink: 0;
+        .ig-post-header {
             display: flex;
             align-items: center;
-            justify-content: center;
-        }
-
-        .card-grid.list-view .card-thumb {
-            display: none;
-        }
-
-        .card-thumb img {
-            width: 100%;
-            height: auto;
-            max-height: 280px;
-            object-fit: contain;
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .activity-card:hover .card-thumb img {
-            transform: scale(1.05);
-        }
-
-        /* No Image Card Styling */
-        .activity-card.no-image-card {
-            flex-direction: column;
-            padding: 1.5rem;
-            background: linear-gradient(160deg, #ffffff 0%, #fafbff 100%);
-        }
-
-        .activity-card.no-image-card .card-body {
-            padding: 0;
-            margin-top: 0.75rem;
-        }
-
-        .no-img-label {
-            display: flex;
-            align-items: center;
-        }
-
-        .platform-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.66rem;
-            font-weight: 700;
-            background: transparent;
-            border: none;
-            letter-spacing: 0.03em;
-        }
-        .platform-instagram { color: #e1306c; background: rgba(225,48,108,0.07); }
-        .platform-tiktok { color: #111; background: rgba(0,0,0,0.04); }
-        .platform-twitter { color: #111; background: rgba(0,0,0,0.04); }
-        .platform-facebook { color: #1877F2; background: rgba(24,119,242,0.07); }
-        .platform-youtube { color: #FF0000; background: rgba(255,0,0,0.07); }
-        .platform-other { color: var(--gray-600); background: var(--gray-100); }
-
-        .card-body {
-            padding: 1.25rem 1.5rem 1.15rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
             justify-content: space-between;
+            padding: 12px 14px;
         }
 
-        .card-body h3 {
-            font-size: 0.88rem;
-            font-weight: 700;
-            line-height: 1.7;
-            color: var(--gray-800);
-            margin-bottom: 0.75rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            transition: color 0.2s;
-        }
-
-        .activity-card:hover .card-body h3 {
-            color: var(--primary);
-        }
-
-        .card-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 0.75rem;
-            border-top: 1px solid rgba(10, 43, 107, 0.05);
-            font-size: 0.68rem;
-            color: var(--gray-400);
-            margin-top: auto;
-            gap: 8px;
-        }
-
-        .office-label {
+        .ig-post-user {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            color: var(--gray-500);
-            font-size: 0.68rem;
+            gap: 10px;
         }
 
-        .office-dot {
-            width: 7px;
-            height: 7px;
+        .ig-avatar {
+            width: 32px; height: 32px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            box-shadow: 0 0 8px rgba(200, 169, 81, 0.35);
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 0.7rem; font-weight: 800;
+            flex-shrink: 0;
+            text-transform: uppercase;
         }
 
-        /* No image */
-        .no-img {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .ig-avatar.platform-instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .ig-avatar.platform-youtube { background: #FF0000; }
+        .ig-avatar.platform-tiktok { background: #111; }
+        .ig-avatar.platform-twitter { background: #111; }
+        .ig-avatar.platform-facebook { background: #1877F2; }
+
+        .ig-username {
+            font-size: 0.85rem; font-weight: 600; color: var(--gray-900);
+            line-height: 1.2;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;
+        }
+        .ig-location {
+            font-size: 0.7rem; color: var(--gray-500);
+            line-height: 1; margin-top: 2px;
+        }
+
+        .ig-post-media {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(160deg, var(--primary), var(--primary-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
+            aspect-ratio: 4 / 5;
+            background: var(--gray-100);
+            position: relative;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            border-top: 0.5px solid rgba(0,0,0,0.05);
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+        }
+        
+        .ig-post-media img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .ig-post-body {
+            padding: 14px;
+        }
+
+        .ig-caption {
+            font-size: 0.85rem; line-height: 1.5; color: var(--gray-900);
+            margin-bottom: 6px;
+        }
+        .ig-caption span { font-weight: 600; margin-right: 4px; }
+        .ig-caption-text { display: inline; }
+
+        .ig-time {
+            font-size: 0.65rem; color: var(--gray-400); text-transform: uppercase;
+            letter-spacing: 0.05em; font-weight: 600; margin-top: 6px;
         }
 
         /* ──── Pagination ──── */
@@ -1004,10 +749,11 @@
         .footer {
             margin-top: 4rem;
             position: relative;
-            background: linear-gradient(160deg, #060E1F 0%, #0A1A3A 40%, #0E2348 100%);
-            color: rgba(255,255,255,0.6);
+            background: linear-gradient(160deg, #060E1F 0%, #0A1A3A 50%, #0E2348 100%);
+            color: rgba(255,255,255,0.7);
             font-size: 0.84rem;
             overflow: hidden;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
 
         .footer::before {
@@ -1017,7 +763,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, transparent, var(--accent), var(--accent-light), var(--accent), transparent);
+            background: linear-gradient(90deg, var(--primary-light), var(--primary), var(--primary-light));
         }
 
         .footer-main {
@@ -1044,43 +790,37 @@
         .footer-brand-logo img {
             height: 48px;
             width: auto;
-            filter: brightness(0) invert(1);
-            opacity: 0.9;
+            filter: brightness(0) invert(1) !important;
         }
 
         .footer-brand-desc {
-            font-size: 0.8rem;
-            line-height: 1.75;
-            color: rgba(255,255,255,0.45);
+            line-height: 1.6;
+            margin-top: 0.5rem;
             max-width: 320px;
         }
 
         .footer-social {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-top: 0.5rem;
         }
 
         .footer-social a {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255,255,255,0.5);
-            transition: all 0.3s ease;
-            text-decoration: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.7);
+            transition: all 0.25s ease;
         }
 
         .footer-social a:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #0A1A3A;
+            background: rgba(255,255,255,0.15);
+            color: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(200,169,81,0.3);
         }
 
         .footer-col {
@@ -1089,104 +829,94 @@
         }
 
         .footer-col-title {
-            font-size: 0.68rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.14em;
-            color: var(--accent);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
             margin-bottom: 1.25rem;
             position: relative;
-            padding-bottom: 0.75rem;
+            display: inline-block;
         }
 
         .footer-col-title::after {
             content: '';
             position: absolute;
-            bottom: 0;
             left: 0;
+            bottom: -6px;
             width: 24px;
-            height: 2px;
+            height: 3px;
             background: var(--accent);
-            border-radius: 2px;
-            opacity: 0.4;
+            border-radius: 3px;
         }
 
         .footer-link-list {
             list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
         }
 
-        .footer-link-list li a {
-            color: rgba(255,255,255,0.55);
+        .footer-link-list li {
+            margin-bottom: 0.85rem;
+        }
+
+        .footer-link-list a {
+            color: rgba(255,255,255,0.7);
             text-decoration: none;
-            font-size: 0.82rem;
-            font-weight: 400;
-            transition: all 0.2s ease;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.2s;
         }
 
-        .footer-link-list li a:hover {
+        .footer-link-list a:hover {
             color: #ffffff;
             transform: translateX(3px);
         }
 
-        .footer-link-list li a svg {
+        .footer-link-list svg {
             width: 14px;
             height: 14px;
-            opacity: 0.4;
-            flex-shrink: 0;
+            color: var(--gray-400);
         }
 
         .footer-contact-item {
             display: flex;
-            align-items: flex-start;
             gap: 12px;
-            margin-bottom: 1rem;
+            margin-bottom: 1.15rem;
         }
 
         .footer-contact-icon {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
             border-radius: 8px;
-            background: rgba(200,169,81,0.08);
-            border: 1px solid rgba(200,169,81,0.12);
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent);
             flex-shrink: 0;
-            margin-top: 2px;
         }
 
         .footer-contact-icon svg {
-            width: 16px;
-            height: 16px;
+            width: 15px;
+            height: 15px;
         }
 
         .footer-contact-text {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
 
         .footer-contact-label {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.05em;
+            color: var(--gray-400);
         }
 
         .footer-contact-value {
-            font-size: 0.84rem;
-            color: rgba(255,255,255,0.7);
-            line-height: 1.5;
+            color: #ffffff;
+            font-weight: 500;
+            line-height: 1.4;
         }
 
         .footer-bottom {
@@ -1201,36 +931,63 @@
 
         .footer-bottom p {
             font-size: 0.72rem;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.85);
             letter-spacing: 0.04em;
             margin: 0;
         }
 
         .footer-bottom .footer-accent {
-            color: var(--accent);
-            font-weight: 600;
+            color: #4A90D9;
+            font-weight: 700;
         }
+
+
 
         /* ──── Responsive ──── */
         @media (max-width: 1024px) {
             .card-grid { grid-template-columns: 1fr; }
             .filter-dropdown-inner { grid-template-columns: repeat(2, 1fr); }
         }
+        
+        @media (max-width: 768px) {
+
+            
+            .hero-content {
+                padding: 100px 1.5rem 5rem;
+            }
+            .hero-content h1 { font-size: 2.5rem; }
+            .content-wrapper { padding: 0 1rem; }
+            .stat-card { min-width: 140px; }
+            
+            .ig-feed-container { max-width: 100%; gap: 1.5rem; grid-template-columns: 1fr; }
+            .ig-post { border-radius: 0; border-left: none; border-right: none; }
+
+            .section-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .view-modes { width: 100%; justify-content: flex-start; }
+            
+            .filter-panel { padding: 1rem; border-radius: 12px; }
+            .filter-main { grid-template-columns: 1fr; gap: 10px; }
+            .filter-search-input input { padding: 12px 14px 12px 40px; font-size: 0.95rem; }
+            .filter-dropdown-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {    .filter-dropdown-inner { grid-template-columns: repeat(2, 1fr); }
+        }
 
         @media (max-width: 768px) {
             .navbar { padding: 0 1rem; }
-            .hero { padding: 90px 1.25rem 60px; min-height: 420px; }
-            .hero-logo { height: 140px; }
-            .stats-row { flex-direction: row; max-width: 100%; gap: 0.6rem; padding: 0 0.25rem; }
-            .stat { padding: 1rem 0.5rem 0.85rem; border-radius: 14px; }
-            .stat-icon { width: 38px; height: 38px; border-radius: 10px; margin-bottom: 0.6rem; }
-            .stat-icon svg { width: 18px; height: 18px; }
-            .stat-num { font-size: 1.5rem; }
-            .stat-label { font-size: 0.6rem; letter-spacing: 0.06em; }
-            .stat + .stat { border-left: none; border-top: none; }
+            .hero { padding: 90px 1.25rem 60px; }
+            .hero-inner { flex-direction: column; gap: 2.5rem; text-align: center; }
+            .hero-eyebrow { margin-left: auto; margin-right: auto; }
+            .hero-tagline { max-width: 100%; margin-left: auto; margin-right: auto; }
+            .hero-cta { margin: 0 auto; }
+            .hero-title { font-size: 1.8rem; }
+            .stats-row { flex-direction: column; gap: 0.8rem; width: 100%; align-items: center; }
+            .stat { width: 100%; max-width: 320px; }
             .card-grid { grid-template-columns: 1fr; }
             .activity-card { flex-direction: column; }
-            .card-thumb { width: 100%; aspect-ratio: 16 / 9; }
             .main-content { padding: 1.5rem 1rem; }
             .filter-section { padding: 0.75rem; margin-top: 0; }
             .filter-bar { overflow: hidden; padding: 0.85rem; border-width: 1.5px; }
@@ -1253,45 +1010,30 @@
 </head>
 <body>
 
-    <!-- ═══════ NAVBAR ═══════ -->
-    <nav class="navbar" id="navbar">
-        <a href="{{ url('/') }}" class="navbar-brand">
-            <img src="{{ asset('images/logo_header.png') }}" alt="Logo Kemenham" style="height: 55px; width: auto;">
-        </a>
-        <div class="navbar-actions">
-            <div class="lang-toggle" id="langToggle">
-                <button class="lang-opt active" data-lang="id" onclick="setLang('id')">ID</button>
-                <button class="lang-opt" data-lang="en" onclick="setLang('en')">EN</button>
-            </div>
-            <a href="{{ url('/admin') }}" class="btn-login">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                <span data-i18n="login">Login Staff</span>
-            </a>
-        </div>
-    </nav>
+    @include("partials.navbar")
 
     <!-- ═══════ HERO ═══════ -->
     <section class="hero">
-        <video class="hero-video" autoplay loop muted playsinline id="heroBgVideo">
-            <source src="{{ asset('videos/video.mp4') }}" type="video/mp4">
-        </video>
-        <div class="hero-overlay"></div>
-        <div class="hero-glow hero-glow-1"></div>
-        <div class="hero-glow hero-glow-2"></div>
-
         <div class="hero-inner">
-            <img src="{{ asset('images/logo_center.png') }}" alt="Center Logo" class="hero-logo">
-            <div class="hero-accent-line"></div>
-            <p class="hero-tagline" data-i18n="hero_desc">Portal agregasi kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia di Indonesia. Konten dikurasi langsung dari media sosial resmi.</p>
+            <div class="hero-content">
 
+                <h1 class="hero-title" data-i18n="hero_title">Portal Kegiatan Harian Kemenham</h1>
+                <p class="hero-tagline" data-i18n="hero_desc">Portal agregasi kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia di Indonesia. Konten dikurasi langsung dari media sosial resmi.</p>
+                <a href="{{ route('public.kegiatan') }}" class="hero-cta">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                    <span data-i18n="hero_cta">Lihat Kegiatan</span>
+                </a>
+            </div>
             <div class="stats-row">
-                <a href="#activities" class="stat-link">
+                <a href="{{ route('public.kegiatan') }}" class="stat-link">
                 <div class="stat">
                     <div class="stat-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg>
                     </div>
-                    <div class="stat-num" data-count="{{ $activities->total() }}">0</div>
-                    <div class="stat-label" data-i18n="activities">Kegiatan</div>
+                    <div class="stat-text">
+                        <div class="stat-num" data-count="{{ $activities->total() }}">0</div>
+                        <div class="stat-label" data-i18n="activities">Kegiatan</div>
+                    </div>
                 </div>
                 </a>
                 <a href="{{ route('public.offices') }}" class="stat-link">
@@ -1299,8 +1041,10 @@
                     <div class="stat-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M9 17h1"/></svg>
                     </div>
-                    <div class="stat-num" data-count="{{ \App\Models\Office::count() }}">0</div>
-                    <div class="stat-label" data-i18n="regional_offices">Kanwil dan Wilker</div>
+                    <div class="stat-text">
+                        <div class="stat-num" data-count="{{ \App\Models\Office::count() }}">0</div>
+                        <div class="stat-label" data-i18n="regional_offices">Unit Kerja</div>
+                    </div>
                 </div>
                 </a>
                 <a href="/?hari_ini=1#activities" class="stat-link">
@@ -1308,13 +1052,14 @@
                     <div class="stat-icon">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="M12 14h.01"/></svg>
                     </div>
-                    <div class="stat-num" data-count="{{ \App\Models\Activity::published()->whereDate('approved_at', today())->count() }}">0</div>
-                    <div class="stat-label" data-i18n="today">Hari Ini</div>
+                    <div class="stat-text">
+                        <div class="stat-num" data-count="{{ \App\Models\Activity::published()->whereDate('approved_at', today())->count() }}">0</div>
+                        <div class="stat-label" data-i18n="today">Hari Ini</div>
+                    </div>
                 </div>
                 </a>
             </div>
         </div>
-        <div class="hero-fade"></div>
     </section>
 
     <!-- ═══════ FILTERS ═══════ -->
@@ -1345,7 +1090,7 @@
                         <span data-i18n="search_btn">Cari</span>
                     </button>
 
-                    @if(request()->hasAny(['cari', 'kanwil', 'unit', 'dari', 'sampai', 'hari_ini']))
+                    @if(request()->hasAny(['cari', 'kanwil', 'dari', 'sampai', 'hari_ini']))
                         <a href="{{ url('/') }}" class="btn-reset" data-i18n="reset">Reset</a>
                     @endif
                 </div>
@@ -1353,9 +1098,9 @@
                 <div class="filter-dropdown {{ $activeFilterCount > 0 ? 'open' : '' }}" id="filterDropdown">
                     <div class="filter-dropdown-inner">
                         <div class="fd-group">
-                            <label for="kanwil" data-i18n="kanwil_label">Kantor Wilayah</label>
+                            <label for="kanwil" data-i18n="kanwil_label">Unit Kerja</label>
                             <select name="kanwil" id="kanwil">
-                                <option value="">Semua Kanwil</option>
+                                <option value="">Semua Unit</option>
                                 @foreach($offices as $office)
                                     <option value="{{ $office->id }}" {{ request('kanwil') == $office->id ? 'selected' : '' }}>
                                         {{ $office->name }}
@@ -1364,17 +1109,7 @@
                             </select>
                         </div>
 
-                        <div class="fd-group">
-                            <label for="unit" data-i18n="unit_label">Unit Kerja</label>
-                            <select name="unit" id="unit">
-                                <option value="">Semua Unit</option>
-                                @foreach($units as $u)
-                                    <option value="{{ $u->value }}" {{ request('unit') == $u->value ? 'selected' : '' }}>
-                                        {{ $u->label() }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+
 
                         <div class="fd-group">
                             <label for="dari" data-i18n="from_date">Dari Tanggal</label>
@@ -1389,7 +1124,7 @@
                 </div>
             </form>
 
-            @if(request()->hasAny(['cari', 'kanwil', 'unit', 'dari', 'sampai', 'hari_ini']))
+            @if(request()->hasAny(['cari', 'kanwil', 'dari', 'sampai', 'hari_ini']))
                 <div class="active-filters">
                     <span class="label" data-i18n="active_filters">Filter aktif:</span>
                     @if(request('hari_ini'))
@@ -1401,9 +1136,7 @@
                     @if(request('kanwil'))
                         <span class="filter-chip">{{ $offices->firstWhere('id', request('kanwil'))?->name }}</span>
                     @endif
-                    @if(request('unit'))
-                        <span class="filter-chip"><span data-i18n="chip_unit">Unit</span>: {{ request('unit') }}</span>
-                    @endif
+
                     @if(request('dari'))
                         <span class="filter-chip"><span data-i18n="chip_from">Dari</span>: {{ request('dari') }}</span>
                     @endif
@@ -1416,28 +1149,14 @@
     </div>
 
     <script>
+
+
+        // ──── Filter Dropdown ────
         function toggleFilter() {
             const dropdown = document.getElementById('filterDropdown');
             const btn = document.getElementById('btnToggleFilter');
             dropdown.classList.toggle('open');
             btn.classList.toggle('active');
-        }
-
-        function setViewMode(mode) {
-            localStorage.setItem('hamdans_view', mode);
-            const grid = document.querySelector('.card-grid');
-            if(grid) {
-                if(mode === 'list') {
-                    grid.classList.add('list-view');
-                } else {
-                    grid.classList.remove('list-view');
-                }
-            }
-
-            // Update buttons
-            document.querySelectorAll('.view-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.view === mode);
-            });
         }
     </script>
 
@@ -1448,49 +1167,75 @@
                 <h2 data-i18n="latest_activities">Kegiatan Terbaru</h2>
                 <span class="count-badge"><span>{{ $activities->total() }}</span> <span data-i18n="published">dipublikasikan</span></span>
             </div>
-            <div class="view-modes">
-                <button type="button" class="view-btn active" data-view="grid" onclick="setViewMode('grid')" data-title-id="grid_view" data-title-en="Grid View (With Images)" title="Mode Ikon (Dengan Gambar)">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                </button>
-                <button type="button" class="view-btn" data-view="list" onclick="setViewMode('list')" data-title-id="Daftar (Tanpa Gambar)" data-title-en="List View (No Images)" title="Mode Daftar (Tanpa Gambar)">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-            </div>
         </div>
 
+        {{-- IG FEED --}}
         @if($activities->count())
-            <div class="card-grid">
+            <div class="ig-feed-container">
                 @foreach($activities as $activity)
                     @php
                         $hasImage = $activity->foto_dokumentasi || $activity->extracted_image;
+                        $imgSrc = $activity->foto_dokumentasi
+                            ? asset('storage/' . $activity->foto_dokumentasi)
+                            : $activity->extracted_image;
+                        $pVal = strtolower($activity->platform?->value ?? 'other');
+                        $officeName = $activity->office?->name ?? 'Kemenham';
+                        $avatarClasses = 'ig-avatar platform-' . $pVal;
                     @endphp
-                    <a href="{{ route('public.show', $activity) }}" class="activity-card {{ !$hasImage ? 'no-image-card' : '' }}">
-                        @if($hasImage)
-                            <div class="card-thumb">
-                                @if($activity->foto_dokumentasi)
-                                    <img src="{{ asset('storage/' . $activity->foto_dokumentasi) }}" alt="{{ Str::limit($activity->extracted_title, 80) }}" loading="lazy">
-                                @else
-                                    <img src="{{ $activity->extracted_image }}" alt="{{ Str::limit($activity->extracted_title, 80) }}" loading="lazy">
-                                @endif
-                            </div>
-                        @else
-                           <!-- Removed no-img-label platform tag as it will be in the footer -->
-                        @endif
-
-                        <div class="card-body">
-                            <h3>{{ $activity->extracted_title ?? 'Kegiatan dari ' . ($activity->office?->name ?? 'Kemenham') }}</h3>
-                            <div class="card-bottom">
-                                <span class="platform-badge platform-{{ strtolower($activity->platform?->value ?? 'other') }}">
-                                    {{ $activity->platform?->icon() }} {{ $activity->platform?->label() }}
-                                </span>
-                                <div class="office-label">
-                                    <span class="office-dot"></span>
-                                    {{ $activity->office?->name ?? '-' }}
+                    <div class="ig-post">
+                        
+                        {{-- Header --}}
+                        <div class="ig-post-header">
+                            <div class="ig-post-user">
+                                <div class="{{ $avatarClasses }}">
+                                    @if($pVal === 'instagram')
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/></svg>
+                                    @elseif($pVal === 'youtube')
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                    @elseif($pVal === 'tiktok')
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+                                    @elseif($pVal === 'twitter')
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                    @elseif($pVal === 'facebook')
+                                        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                    @else
+                                        {{ substr($officeName, 0, 2) }}
+                                    @endif
                                 </div>
-                                <span class="relative-time" data-time="{{ ($activity->approved_at ?? $activity->created_at)->toIso8601String() }}">{{ $activity->approved_at?->diffForHumans() ?? $activity->created_at->diffForHumans() }}</span>
+                                <div>
+                                    <div class="ig-username">{{ $officeName }}</div>
+                                    <div class="ig-location">{{ $activity->platform?->label() ?? 'Portal Berita' }}</div>
+                                </div>
                             </div>
                         </div>
-                    </a>
+
+                        {{-- Media --}}
+                        <div class="ig-post-media">
+                            @if($hasImage)
+                                <img src="{{ $imgSrc }}" alt="Kegiatan" loading="lazy">
+                            @else
+                                <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: linear-gradient(145deg, var(--primary), var(--primary-dark)); font-size: 5rem;">
+                                    {{ $activity->platform?->icon() ?? '🔗' }}
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Body (Caption) --}}
+                        <div class="ig-post-body">
+                            <div class="ig-caption">
+                                <span>{{ $officeName }}</span>
+                                <div class="ig-caption-text">{{ $activity->extracted_title }}</div>
+                                <div>
+                                    <a href="{{ route('public.show', $activity) }}" data-i18n="read_more" style="color: var(--gray-500); font-size: 0.82rem; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 4px;">Lihat selengkapnya...</a>
+                                </div>
+                            </div>
+
+                            <div class="ig-time">
+                                {{ ($activity->approved_at ?? $activity->created_at)->diffForHumans() }} • {{ ($activity->approved_at ?? $activity->created_at)->translatedFormat('H:i') }}
+                            </div>
+                        </div>
+
+                    </div>
                 @endforeach
             </div>
 
@@ -1515,7 +1260,7 @@
                     <img src="{{ asset('images/logo_header.png') }}" alt="Logo">
                 </div>
                 <p class="footer-brand-desc" data-i18n="footer_desc">
-                    Portal Kegiatan Harian Kementerian Hak Asasi Manusia Republik Indonesia. Menampilkan kegiatan dan publikasi resmi dari seluruh Kantor Wilayah.
+                    Portal Kegiatan Harian Kementerian Hak Asasi Manusia Republik Indonesia. Menampilkan kegiatan dan publikasi resmi dari seluruh Unit Kerja.
                 </p>
                 <div class="footer-social">
                     <a href="https://www.instagram.com/kemenham/" target="_blank" title="Instagram">
@@ -1540,7 +1285,7 @@
                     <li><a href="{{ url('/') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg> <span data-i18n="nav_home">Beranda</span></a></li>
                     <li><a href="https://kemenham.go.id" target="_blank"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg> <span data-i18n="official_website">Website Resmi</span></a></li>
 
-                    <li><a href="{{ route('login') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg> <span data-i18n="nav_login">Login Admin</span></a></li>
+                    <li><a href="{{ url('/admin') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg> <span data-i18n="nav_login">Login Admin</span></a></li>
                 </ul>
             </div>
 
@@ -1593,155 +1338,11 @@
                 }
             });
         }
+    </script>
 
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 60);
-        });
+    @include("partials.navbar-scripts")
 
-        // ──── Language Switcher ────
-        const translations = {
-            id: {
-                login: 'Login Staff',
-                ministry: 'Kementerian Hak Asasi Manusia RI',
-                hero_desc: 'Portal agregasi kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia di Indonesia. Konten dikurasi langsung dari media sosial resmi.',
-                activities: 'Kegiatan',
-                regional_offices: 'Kanwil dan Wilker',
-                today: 'Hari Ini',
-                search_placeholder: 'Cari kegiatan...',
-                filter: 'Filter',
-                search_btn: 'Cari',
-                reset: 'Reset',
-                kanwil_label: 'KANTOR WILAYAH',
-                unit_label: 'UNIT KERJA',
-                from_date: 'DARI TANGGAL',
-                to_date: 'SAMPAI TANGGAL',
-                all_kanwil: 'Semua Kanwil',
-                all_unit: 'Semua Unit',
-                active_filters: 'Filter aktif:',
-                latest_activities: 'Kegiatan Terbaru',
-                published: 'dipublikasikan',
-                no_results: 'Tidak Ada Kegiatan Ditemukan',
-                no_results_desc: 'Coba ubah filter pencarian atau <a href="/" style="color: var(--blue); font-weight: 600;">reset semua filter</a>.',
-                footer: 'Kementerian Hak Asasi Manusia Republik Indonesia',
-                footer_desc: 'Portal Kegiatan Harian Kementerian Hak Asasi Manusia Republik Indonesia. Menampilkan kegiatan dan publikasi resmi dari seluruh Kantor Wilayah.',
-                footer_links: 'Tautan',
-                nav_home: 'Beranda',
-                official_website: 'Website Resmi',
-                nav_login: 'Login Admin',
-                contact_us: 'Hubungi Kami',
-                phone: 'Telepon',
-                our_address: 'Alamat',
-                about: 'Tentang',
-                grid_title: 'Mode Ikon (Dengan Gambar)',
-                list_title: 'Mode Daftar (Tanpa Gambar)',
-                chip_unit: 'Unit',
-                chip_from: 'Dari',
-                chip_to: 'Sampai',
-            },
-            en: {
-                login: 'Staff Login',
-                ministry: 'Ministry of Human Rights Republic of Indonesia',
-                hero_desc: 'Daily activity aggregation portal from all Regional Offices of the Ministry of Human Rights in Indonesia. Content curated directly from official social media.',
-                activities: 'Activities',
-                regional_offices: 'Regional Offices',
-                today: 'Today',
-                search_placeholder: 'Search activities...',
-                filter: 'Filter',
-                search_btn: 'Search',
-                reset: 'Reset',
-                kanwil_label: 'REGIONAL OFFICE',
-                unit_label: 'WORK UNIT',
-                from_date: 'FROM DATE',
-                to_date: 'TO DATE',
-                all_kanwil: 'All Offices',
-                all_unit: 'All Units',
-                active_filters: 'Active filters:',
-                latest_activities: 'Latest Activities',
-                published: 'published',
-                no_results: 'No Activities Found',
-                no_results_desc: 'Try changing your search filters or <a href="/" style="color: var(--blue); font-weight: 600;">reset all filters</a>.',
-                footer: 'Ministry of Human Rights Republic of Indonesia',
-                footer_desc: 'Daily Activity Portal of the Ministry of Human Rights of the Republic of Indonesia. Showcasing official activities and publications from all Regional Offices.',
-                footer_links: 'Links',
-                nav_home: 'Home',
-                official_website: 'Official Website',
-                nav_login: 'Admin Login',
-                contact_us: 'Contact Us',
-                phone: 'Phone',
-                our_address: 'Address',
-                about: 'About',
-                grid_title: 'Grid View (With Images)',
-                list_title: 'List View (No Images)',
-                chip_unit: 'Unit',
-                chip_from: 'From',
-                chip_to: 'To',
-            }
-        };
-
-        function setLang(lang) {
-            localStorage.setItem('hamdans_lang', lang);
-
-            // Update toggle buttons
-            document.querySelectorAll('.lang-opt').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.lang === lang);
-            });
-
-            // Update all data-i18n elements
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.dataset.i18n;
-                if (translations[lang][key]) {
-                    el.innerHTML = translations[lang][key];
-                }
-            });
-
-            // Update placeholders
-            const searchInput = document.querySelector('.filter-search-input input');
-            if (searchInput) searchInput.placeholder = translations[lang].search_placeholder;
-
-            // Update select first options
-            const kanwilSelect = document.getElementById('kanwil');
-            const unitSelect = document.getElementById('unit');
-            if (kanwilSelect && kanwilSelect.options[0]) kanwilSelect.options[0].text = translations[lang].all_kanwil;
-            if (unitSelect && unitSelect.options[0]) unitSelect.options[0].text = translations[lang].all_unit;
-
-            // Update filter dropdown labels
-            const fdLabels = document.querySelectorAll('.fd-group label');
-            const labelKeys = ['kanwil_label', 'unit_label', 'from_date', 'to_date'];
-            fdLabels.forEach((label, i) => {
-                if (labelKeys[i] && translations[lang][labelKeys[i]]) {
-                    label.textContent = translations[lang][labelKeys[i]];
-                }
-            });
-
-            // Update active filters label
-            const afLabel = document.querySelector('.active-filters .label');
-            if (afLabel) afLabel.textContent = translations[lang].active_filters;
-
-            // Update view mode button tooltips
-            document.querySelectorAll('.view-btn[data-view="grid"]').forEach(btn => {
-                btn.title = translations[lang].grid_title;
-            });
-            document.querySelectorAll('.view-btn[data-view="list"]').forEach(btn => {
-                btn.title = translations[lang].list_title;
-            });
-
-            // Update relative timestamps
-            updateRelativeTimes(lang);
-
-            // Update pagination text (Showing X to Y of Z results)
-            document.querySelectorAll('.pagination-wrapper p, [role="navigation"] p, .text-sm').forEach(el => {
-                const text = el.textContent.trim();
-                const match = text.match(/(?:Showing|Menampilkan)\s+(\d+)\s+(?:to|sampai)\s+(\d+)\s+(?:of|dari)\s+(\d+)\s+(?:results|hasil)/i);
-                if (match) {
-                    const [, from, to, total] = match;
-                    el.textContent = lang === 'en'
-                        ? `Showing ${from} to ${to} of ${total} results`
-                        : `Menampilkan ${from} sampai ${to} dari ${total} hasil`;
-                }
-            });
-        }
-
+    <script>
         // ──── Relative Time in ID/EN ────
         function relativeTime(isoString, lang) {
             const now = new Date();
@@ -1833,9 +1434,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('hamdans_lang') || 'id';
             setLang(savedLang);
-
-            const savedView = localStorage.getItem('hamdans_view') || 'grid';
-            setViewMode(savedView);
 
             // Start observing the stats row
             const statsRow = document.querySelector('.stats-row');

@@ -46,29 +46,8 @@
                 align-items: center;
                 position: relative;
                 overflow: hidden;
-                background: linear-gradient(160deg, var(--primary-dark) 0%, var(--primary) 50%, #143d8a 100%);
-            }
-
-            .login-brand::before {
-                content: '';
-                position: absolute;
-                top: -20%;
-                right: -30%;
-                width: 600px;
-                height: 600px;
-                background: radial-gradient(circle, rgba(200,169,81,0.12) 0%, transparent 70%);
-                border-radius: 50%;
-            }
-
-            .login-brand::after {
-                content: '';
-                position: absolute;
-                bottom: -25%;
-                left: -20%;
-                width: 500px;
-                height: 500px;
-                background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
-                border-radius: 50%;
+                background: linear-gradient(180deg, var(--white) 0%, var(--gray-50) 100%);
+                border-right: 1px solid var(--gray-200);
             }
 
             .brand-video {
@@ -95,14 +74,12 @@
                 width: auto;
                 object-fit: contain;
                 margin-bottom: 2rem;
-                filter: brightness(0) invert(1);
-                opacity: 0.95;
             }
 
             .brand-title {
                 font-size: 2rem;
                 font-weight: 800;
-                color: #ffffff;
+                color: var(--gray-900);
                 letter-spacing: -0.02em;
                 margin-bottom: 0.5rem;
                 line-height: 1.2;
@@ -117,7 +94,7 @@
 
             .brand-subtitle {
                 font-size: 0.88rem;
-                color: rgba(255, 255, 255, 0.6);
+                color: var(--gray-500);
                 line-height: 1.7;
                 margin-bottom: 3rem;
             }
@@ -139,13 +116,12 @@
                 width: 40px;
                 height: 40px;
                 border-radius: 10px;
-                background: rgba(255, 255, 255, 0.08);
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: var(--primary-50);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 flex-shrink: 0;
-                color: var(--accent);
+                color: var(--primary);
             }
 
             .feature-icon svg {
@@ -155,13 +131,13 @@
 
             .feature-text {
                 font-size: 0.82rem;
-                color: rgba(255, 255, 255, 0.75);
+                color: var(--gray-600);
                 font-weight: 500;
                 line-height: 1.5;
             }
 
             .feature-text strong {
-                color: #ffffff;
+                color: var(--gray-900);
                 font-weight: 600;
             }
 
@@ -528,7 +504,7 @@
             <div class="brand-content">
                 <img src="{{ asset('images/logo_header.png') }}" alt="Logo" class="brand-logo">
                 <h1 class="brand-title">HAM DAILY <span class="accent">NEWS</span></h1>
-                <p class="brand-subtitle">Portal agregasi kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia di Indonesia.</p>
+                <p class="brand-subtitle">Portal agregasi kegiatan harian dari seluruh Unit Kerja Kementerian Hak Asasi Manusia di Indonesia.</p>
 
                 <div class="brand-features">
                     <div class="brand-feature">
@@ -541,7 +517,7 @@
                         <div class="feature-icon">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M9 17h1"/></svg>
                         </div>
-                        <div class="feature-text"><strong>39 Kanwil dan Wilker</strong> terintegrasi di seluruh Indonesia</div>
+                        <div class="feature-text"><strong>39 Unit Kerja</strong> terintegrasi di seluruh Indonesia</div>
                     </div>
                     <div class="brand-feature">
                         <div class="feature-icon">

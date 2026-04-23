@@ -538,7 +538,7 @@
             <div class="brand-content">
                 <img src="{{ asset('images/logo_header.png') }}" alt="Logo" class="brand-logo">
                 <h1 class="brand-title">HAM DAILY <span class="accent">NEWS</span></h1>
-                <p class="brand-subtitle" data-i18n="brand_subtitle">Portal agregasi kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia di Indonesia.</p>
+                <p class="brand-subtitle" data-i18n="brand_subtitle">Portal agregasi kegiatan harian dari seluruh Unit Kerja Kementerian Hak Asasi Manusia di Indonesia.</p>
 
                 <div class="brand-features">
                     <div class="brand-feature">
@@ -551,7 +551,7 @@
                         <div class="feature-icon">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M9 17h1"/></svg>
                         </div>
-                        <div class="feature-text" data-i18n="feature_2"><strong>39 Kanwil dan Wilker</strong> terintegrasi di seluruh Indonesia</div>
+                        <div class="feature-text" data-i18n="feature_2"><strong>39 Unit Kerja</strong> terintegrasi di seluruh Indonesia</div>
                     </div>
                     <div class="brand-feature">
                         <div class="feature-icon">
@@ -634,11 +634,7 @@
                             <input type="checkbox" name="remember">
                             <span data-i18n="remember_me">Ingat saya</span>
                         </label>
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="forgot-link">
-                                <span data-i18n="forgot_password">Lupa password?</span>
-                            </a>
-                        @endif
+                        {{-- Forgot Password Removed --}}
                     </div>
 
                     <button type="submit" class="btn-login">
@@ -660,16 +656,16 @@
             </div>
 
             <div class="copyright">
-                &copy; {{ date('Y') }} HAM Daily News — <span data-i18n="copyright">Kementerian HAM RI</span>
+                &copy; {{ date('Y') }} HAMDANS — <span data-i18n="copyright">Kementerian Hak Asasi Manusia Republik Indonesia</span>
             </div>
         </div>
 
     <script>
         const translations = {
             id: {
-                brand_subtitle: 'Portal agregasi kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia di Indonesia.',
+                brand_subtitle: 'Portal agregasi kegiatan harian dari seluruh Unit Kerja Kementerian Hak Asasi Manusia di Indonesia.',
                 feature_1: '<strong>Lapor kegiatan</strong> langsung dari media sosial resmi',
-                feature_2: '<strong>39 Kanwil dan Wilker</strong> terintegrasi di seluruh Indonesia',
+                feature_2: '<strong>39 Unit Kerja</strong> terintegrasi di seluruh Indonesia',
                 feature_3: '<strong>Moderasi terpusat</strong> oleh admin pusat',
                 greeting: 'Selamat Datang',
                 login_title: 'Masuk ke akun Anda',
@@ -679,12 +675,12 @@
                 login_btn: 'Masuk',
                 or_divider: 'atau',
                 back_home: 'Kembali ke beranda',
-                copyright: 'Kementerian HAM RI',
+                copyright: 'Kementerian Hak Asasi Manusia Republik Indonesia',
             },
             en: {
-                brand_subtitle: 'Daily activity aggregation portal from all Regional Offices of the Ministry of Human Rights in Indonesia.',
+                brand_subtitle: 'Daily activity aggregation portal from all Work Units of the Ministry of Human Rights in Indonesia.',
                 feature_1: '<strong>Report activities</strong> directly from official social media',
-                feature_2: '<strong>39 Regional Offices</strong> integrated across Indonesia',
+                feature_2: '<strong>39 Work Units</strong> integrated across Indonesia',
                 feature_3: '<strong>Centralized moderation</strong> by central admin',
                 greeting: 'Welcome',
                 login_title: 'Sign in to your account',
@@ -694,7 +690,7 @@
                 login_btn: 'Sign In',
                 or_divider: 'or',
                 back_home: 'Back to homepage',
-                copyright: 'Ministry of Human Rights RI',
+                copyright: 'Ministry of Human Rights of the Republic of Indonesia',
             }
         };
 

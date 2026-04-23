@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\ActivityStatus;
 use App\Enums\Platform;
-use App\Enums\Unit;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +17,6 @@ class Activity extends Model
         'user_id',
         'office_id',
 
-        'unit',
         'social_media_url',
         'platform',
         'extracted_title',
@@ -36,7 +34,6 @@ class Activity extends Model
         return [
             'status' => ActivityStatus::class,
             'platform' => Platform::class,
-            'unit' => Unit::class,
             'approved_at' => 'datetime',
         ];
     }
@@ -73,6 +70,40 @@ class Activity extends Model
     public function scopeForOffice(Builder $query, int $officeId): Builder
     {
         return $query->where('office_id', $officeId);
+    }
+
+    public function scopeApplyFilters(Builder $query, \Illuminate\Http\Request $request): Builder
+    {
+        // Filter by office
+        if ($request->filled('kanwil')) {
+            $query->where('office_id', $request->kanwil);
+        }
+
+        // Filter by date range
+        if ($request->filled('dari')) {
+            $query->whereDate('approved_at', '>=', $request->dari);
+        }
+
+        if ($request->filled('sampai')) {
+            $query->whereDate('approved_at', '<=', $request->sampai);
+        }
+
+        // Search by title
+        if ($request->filled('cari')) {
+            $query->where('extracted_title', 'like', '%' . $request->cari . '%');
+        }
+
+        // Filter today
+        if ($request->filled('hari_ini')) {
+            $query->whereDate('approved_at', today());
+        }
+
+        // Filter by platform
+        if ($request->filled('platform')) {
+            $query->where('platform', $request->platform);
+        }
+
+        return $query;
     }
 
     // ──── Helpers ────

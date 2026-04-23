@@ -22,19 +22,6 @@ class CreateActivity extends CreateRecord
         $data['office_id'] = $user->office_id ?? 1;
         $data['status'] = ActivityStatus::Pending;
 
-        // ──── 16:00 Local Time Restriction ────
-        if (!$user->isAdmin() && $user->office) {
-            $tz = $user->office->timezone;
-            if (now()->timezone($tz)->hour >= 16) {
-                Notification::make()
-                    ->title('Batas Waktu Terlewati')
-                    ->body("Batas waktu penginputan kegiatan adalah pukul 16:00 waktu setempat ({$tz}). Waktu di wilayah instalasi Anda saat ini menunjukkan pukul " . now()->timezone($tz)->format('H:i') . ".")
-                    ->danger()
-                    ->send();
-
-                $this->halt();
-            }
-        }
 
         // Detect platform only if URL is provided
         if (!empty($data['social_media_url'])) {

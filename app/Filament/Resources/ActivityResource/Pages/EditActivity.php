@@ -13,22 +13,6 @@ class EditActivity extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $user = auth()->user();
-
-        // ──── 16:00 Local Time Restriction ────
-        if (!$user->isAdmin() && $user->office) {
-            $tz = $user->office->timezone;
-            if (now()->timezone($tz)->hour >= 16) {
-                Notification::make()
-                    ->title('Batas Waktu Terlewati')
-                    ->body("Batas waktu pengeditan kegiatan adalah pukul 16:00 waktu setempat ({$tz}). Waktu di wilayah instalasi Anda saat ini menunjukkan pukul " . now()->timezone($tz)->format('H:i') . ".")
-                    ->danger()
-                    ->send();
-
-                $this->halt();
-            }
-        }
-
         return $data;
     }
 

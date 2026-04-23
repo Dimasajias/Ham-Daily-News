@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Enums\ActivityStatus;
 use App\Enums\Platform;
-use App\Enums\Unit;
 use App\Filament\Resources\ActivityResource\Pages;
 use App\Jobs\ScrapeActivityJob;
 use App\Models\Activity;
@@ -83,25 +82,18 @@ class ActivityResource extends Resource
                             ->prefixIcon('heroicon-o-link')
                             ->columnSpanFull(),
 
-                        Forms\Components\Grid::make(3)
+                        Forms\Components\Grid::make(1)
                             ->schema([
                                 Forms\Components\FileUpload::make('foto_dokumentasi')
                                     ->label('📷 Foto Dokumentasi')
                                     ->required()
                                     ->image()
                                     ->directory('dokumentasi')
+                                    ->disk('public')
                                     ->imageEditor()
                                     ->maxSize(5120)
                                     ->helperText('Upload foto (maks 5MB). Akan dikompres otomatis.')
-                                    ->columnSpan(2),
-
-                                Forms\Components\Select::make('unit')
-                                    ->label('Unit Kerja')
-                                    ->required()
-                                    ->options(Unit::class)
-                                    ->placeholder('Pilih Unit...')
-                                    ->prefixIcon('heroicon-o-building-office')
-                                    ->columnSpan(1),
+                                    ->columnSpanFull(),
                             ]),
                     ]),
 
@@ -185,12 +177,7 @@ class ActivityResource extends Resource
 
 
 
-                Tables\Columns\TextColumn::make('unit')
-                    ->label('Unit')
-                    ->badge()
-                    ->color('gray')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pelapor')
@@ -213,14 +200,12 @@ class ActivityResource extends Resource
                     ->label('Disubmit')
                     ->dateTime('d M Y, H:i')
                     ->sortable()
-                    ->since()
                     ->tooltip(fn (Activity $record) => $record->created_at?->format('d M Y H:i:s')),
 
                 Tables\Columns\TextColumn::make('approved_at')
                     ->label('Direview')
                     ->dateTime('d M Y, H:i')
                     ->sortable()
-                    ->since()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->placeholder('—'),
             ])
@@ -254,10 +239,7 @@ class ActivityResource extends Resource
 
 
 
-                Tables\Filters\SelectFilter::make('unit')
-                    ->label('Unit')
-                    ->options(Unit::class)
-                    ->indicator('Unit'),
+
             ])
             ->filtersFormColumns(3)
             ->actions([
