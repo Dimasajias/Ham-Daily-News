@@ -1,0 +1,14 @@
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Jika file/folder nyata ada, sajikan langsung
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Semua request lain -> index.php
+    RewriteRule ^ index.php [L]
+</IfModule>
