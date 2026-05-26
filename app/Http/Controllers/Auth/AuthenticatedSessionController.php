@@ -12,15 +12,32 @@ use Illuminate\View\View;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Display the login view with CAPTCHA challenge.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.login');
+        // Generate CAPTCHA: soal matematika sederhana
+        $num1 = random_int(1, 20);
+        $num2 = random_int(1, 20);
+        $operators = ['+', '-'];
+        $operator = $operators[array_rand($operators)];
+
+        $answer = match ($operator) {
+            '+' => $num1 + $num2,
+            '-' => $num1 - $num2,
+        };
+
+        // Simpan jawaban di session
+        $request->session()->put('captcha_answer', $answer);
+
+        return view('auth.login', [
+            'captcha_question' => "{$num1} {$operator} {$num2} = ?",
+        ]);
     }
 
     /**
      * Handle an incoming authentication request.
+     * Setelah kredensial valid → langsung login (tanpa OTP).
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -28,7 +45,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/admin');
+        return redirect()->intended(route('filament.admin.pages.dashboard', absolute: false));
     }
 
     /**

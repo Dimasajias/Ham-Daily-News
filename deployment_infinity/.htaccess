@@ -1,11 +1,14 @@
+DirectoryIndex index.php
+
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
     RewriteEngine On
+    RewriteBase /
 
-    # Arahkan semua request (kecuali yang menuju file nyata) ke folder public
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ public/$1 [L]
+    # Jika file/folder nyata ada, sajikan langsung
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Semua request lain -> index.php
+    RewriteRule ^ index.php [L]
 </IfModule>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kegiatan — HAMDANS | Kementerian Hak Asasi Manusia RI</title>
     <link rel="icon" href="{{ asset('images/logo_kemenham.png') }}" type="image/png">
-    <meta name="description" content="Daftar seluruh kegiatan harian dari Kantor Wilayah Kementerian Hak Asasi Manusia Republik Indonesia.">
+    <meta name="description" content="Daftar seluruh kegiatan harian dari Unit Kerja, Kantor Wilayah, dan Wilayah Kerja Kementerian Hak Asasi Manusia Republik Indonesia.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -608,6 +608,7 @@
             grid-template-columns: 1.5fr 1fr;
             gap: 1.5rem;
             padding: 0 2rem;
+            justify-content: center;
         }
 
         .chart-card {
@@ -663,6 +664,15 @@
             flex: 1;
             position: relative;
             min-height: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container canvas {
+            max-width: 100% !important;
+            margin: 0 auto;
         }
 
         /* ════════ FOOTER ════════ */
@@ -783,8 +793,13 @@
             .stats-dashboard {
                 grid-template-columns: 1fr;
                 padding: 0 1rem;
+                justify-content: center;
             }
-            .chart-card { height: 350px; }
+            .chart-card {
+                height: 320px;
+                width: 100%;
+                max-width: 100%;
+            }
         }
         }
 
@@ -827,9 +842,9 @@
     <section class="page-hero">
         <div class="page-hero-inner">
             <div>
-                <div class="hero-eyebrow">Portal Kegiatan Resmi</div>
-                <h1>Seluruh <em>Kegiatan</em><br>Kemenham</h1>
-                <p>Rekap kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia, dikurasi dari kanal media sosial resmi.</p>
+                <div class="hero-eyebrow" data-i18n="kegiatan_hero_eyebrow">Portal Kegiatan Resmi</div>
+                <h1 data-i18n="kegiatan_hero_title">Seluruh <em>Kegiatan</em><br>Kemenham</h1>
+                <p data-i18n="kegiatan_hero_desc">Rekap kegiatan harian dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja Kementerian Hak Asasi Manusia, dikurasi dari kanal media sosial resmi.</p>
                 <div class="summary-stats">
                     <div class="summary-card">
                         <div class="summary-icon gold">
@@ -837,7 +852,7 @@
                         </div>
                         <div class="summary-content">
                             <span class="summary-num">{{ $activities->total() }}</span>
-                            <span class="summary-label">Total Kegiatan</span>
+                            <span class="summary-label" data-i18n="total_activities">Total Kegiatan</span>
                         </div>
                     </div>
                     <div class="summary-card">
@@ -846,7 +861,7 @@
                         </div>
                         <div class="summary-content">
                             <span class="summary-num">{{ \App\Models\Activity::published()->whereDate('approved_at', today())->count() }}</span>
-                            <span class="summary-label">Hari Ini</span>
+                            <span class="summary-label" data-i18n="today_label2">Hari Ini</span>
                         </div>
                     </div>
                     <div class="summary-card">
@@ -855,7 +870,7 @@
                         </div>
                         <div class="summary-content">
                             <span class="summary-num">{{ \App\Models\Office::count() }}</span>
-                            <span class="summary-label">Unit Kerja</span>
+                            <span class="summary-label" data-i18n="regional_offices">Unit Kerja</span>
                         </div>
                     </div>
                 </div>
@@ -866,9 +881,7 @@
     {{-- PLATFORM TABS --}}
     @php
         $currentPlatform = request('platform', '');
-        $platformCounts = \App\Models\Activity::published()
-            ->selectRaw('platform, count(*) as total')
-            ->groupBy('platform')->pluck('total', 'platform');
+        $platformCounts = $platformData;
 
         $tabActiveClass = fn($p) => match(true) {
             $p === '' && $currentPlatform === '' => 'is-active',
@@ -885,7 +898,7 @@
         <div class="platform-tabs">
             <a href="{{ route('public.kegiatan', request()->except(['platform','page'])) }}" class="platform-tab {{ $tabActiveClass('') }}">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M9 12h6M12 9v6"/></svg>
-                Semua
+                <span data-i18n="all_platforms">Semua</span>
                 <span class="tab-pill">{{ $platformCounts->sum() }}</span>
             </a>
             @foreach([
@@ -927,7 +940,7 @@
                     <div class="filter-search-row">
                         <div class="filter-search-input">
                             <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                            <input type="text" name="cari" placeholder="Cari kegiatan, kantor, atau topik..." value="{{ request('cari') }}">
+                            <input type="text" name="cari" placeholder="Cari kegiatan, kantor, atau topik..." data-i18n-placeholder="search_placeholder" value="{{ request('cari') }}">
                         </div>
 
                         <button type="button" class="btn-toggle-filter" onclick="toggleFilter()" id="btnToggleFilter">
@@ -957,8 +970,8 @@
                     <div class="filter-dropdown" id="filterDropdown">
                         <div class="filter-dropdown-inner">
                             <div class="fd-group">
-                                <label data-i18n="sort_unit">Unit Kerja</label>
-                                <select name="kanwil">
+                                <label data-i18n="kanwil_label">Unit Kerja</label>
+                                <select name="kanwil" id="kanwil">
                                     <option value="">Semua Unit</option>
                                     @foreach($offices as $office)
                                         <option value="{{ $office->id }}" {{ request('kanwil') == $office->id ? 'selected' : '' }}>{{ $office->name }}</option>
@@ -966,26 +979,26 @@
                                 </select>
                             </div>
                             <div class="fd-group">
-                                <label data-i18n="date_start">Dari Tanggal</label>
+                                <label data-i18n="from_date">Dari Tanggal</label>
                                 <input type="date" name="dari" value="{{ request('dari') }}">
                             </div>
                             <div class="fd-group">
-                                <label data-i18n="date_end">Sampai Tanggal</label>
+                                <label data-i18n="to_date">Sampai Tanggal</label>
                                 <input type="date" name="sampai" value="{{ request('sampai') }}">
                             </div>
                         </div>
 
                         @if(request()->hasAny(['kanwil','dari','sampai']))
                         <div class="active-filters">
-                            <span class="label">Filter Aktif:</span>
+                            <span class="label" data-i18n="active_filters">Filter Aktif:</span>
                             @if(request('kanwil'))
-                                <span class="filter-chip">Unit: {{ $offices->find(request('kanwil'))?->name }}</span>
+                                <span class="filter-chip"><span data-i18n="unit_prefix">Unit:</span> {{ $offices->find(request('kanwil'))?->name }}</span>
                             @endif
                             @if(request('dari'))
-                                <span class="filter-chip">Dari: {{ request('dari') }}</span>
+                                <span class="filter-chip"><span data-i18n="chip_from">Dari</span>: {{ request('dari') }}</span>
                             @endif
                             @if(request('sampai'))
-                                <span class="filter-chip">Sampai: {{ request('sampai') }}</span>
+                                <span class="filter-chip"><span data-i18n="chip_to">Sampai</span>: {{ request('sampai') }}</span>
                             @endif
                         </div>
                         @endif
@@ -995,14 +1008,46 @@
         </div>
 
         {{-- CHARTS DASHBOARD --}}
+
+        {{-- Modal Fullscreen Grafik --}}
+        <div id="chartModal" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); padding:24px; box-sizing:border-box; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="background:#0F172A; border:1px solid rgba(255,255,255,0.1); border-radius:16px; width:100%; max-width:1100px; padding:24px; position:relative; display:flex; flex-direction:column; height:90vh;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                    <span id="modalChartTitle" style="color:#E2E8F0; font-weight:600; font-size:15px;"></span>
+                    <button onclick="closeChartModal()" style="background:rgba(255,255,255,0.08); border:none; border-radius:8px; color:#94A3B8; width:36px; height:36px; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center;">&times;</button>
+                </div>
+                <div style="flex:1; position:relative;">
+                    <canvas id="modalChart"></canvas>
+                </div>
+            </div>
+        </div>
+
         <div class="stats-dashboard">
             <div class="chart-card">
                 <div class="chart-header">
                     <div class="chart-title">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                        Trend Kegiatan (7 Hari Terakhir)
+                        <span>
+                            @if(request()->filled('dari') || request()->filled('sampai'))
+                                Trend Kegiatan
+                                @if(request()->filled('dari') && request()->filled('sampai'))
+                                    ({{ \Carbon\Carbon::parse(request('dari'))->translatedFormat('d M Y') }} &ndash; {{ \Carbon\Carbon::parse(request('sampai'))->translatedFormat('d M Y') }})
+                                @elseif(request()->filled('dari'))
+                                    (Sejak {{ \Carbon\Carbon::parse(request('dari'))->translatedFormat('d M Y') }})
+                                @elseif(request()->filled('sampai'))
+                                    (Hingga {{ \Carbon\Carbon::parse(request('sampai'))->translatedFormat('d M Y') }})
+                                @endif
+                            @else
+                                <span data-i18n="trend_7_days">Trend Kegiatan (7 Hari Terakhir)</span>
+                            @endif
+                        </span>
                     </div>
-                    <div class="chart-badge">Live Data</div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="chart-badge" data-i18n="live_data">Live Data</div>
+                        <button onclick="expandChart('trendChart', this.closest('.chart-card').querySelector('.chart-title span').textContent.trim())" title="Perluas" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:#94A3B8; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <div class="chart-container">
                     <canvas id="trendChart"></canvas>
@@ -1013,8 +1058,11 @@
                 <div class="chart-header">
                     <div class="chart-title">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
-                        Distribusi per Platform
+                        <span data-i18n="platform_distribution">Distribusi per Platform</span>
                     </div>
+                    <button onclick="expandChart('platformChart', 'Distribusi per Platform')" title="Perluas" style="background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); border-radius:8px; color:#94A3B8; width:30px; height:30px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">
+                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                        </button>
                 </div>
                 <div class="chart-container">
                     <canvas id="platformChart"></canvas>
@@ -1044,7 +1092,9 @@
                         $imgSrc = $activity->foto_dokumentasi
                             ? asset('storage/' . $activity->foto_dokumentasi)
                             : $activity->extracted_image;
-                        $pVal = strtolower($activity->platform?->value ?? 'other');
+                        $allPlatforms = $activity->getPlatforms();
+                        $firstPlatform = collect($allPlatforms)->first();
+                        $pVal = strtolower($firstPlatform?->value ?? 'other');
                         $officeName = $activity->office?->name ?? 'Kemenham';
                         $avatarClasses = 'ig-avatar platform-' . $pVal;
                     @endphp
@@ -1070,7 +1120,7 @@
                                 </div>
                                 <div>
                                     <div class="ig-username">{{ $officeName }}</div>
-                                    <div class="ig-location">{{ $activity->platform?->label() ?? 'Portal Berita' }}</div>
+                                    <div class="ig-location">{!! collect($allPlatforms)->map(fn ($p) => $p->label())->join(' &middot; ') ?: '<span data-i18n="portal_berita">Portal Berita</span>' !!}</div>
                                 </div>
                             </div>
                         </div>
@@ -1092,12 +1142,14 @@
                                 <span>{{ $officeName }}</span>
                                 <div class="ig-caption-text">{{ $activity->extracted_title }}</div>
                                 <div>
-                                    <a href="{{ route('public.show', $activity) }}" style="color: var(--gray-500); font-size: 0.82rem; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 4px;">Lihat selengkapnya...</a>
+                                    <a href="{{ route('public.show', $activity) }}" data-i18n="read_more" style="color: var(--gray-500); font-size: 0.82rem; font-weight: 500; text-decoration: none; display: inline-block; margin-top: 4px;">Lihat selengkapnya...</a>
                                 </div>
                             </div>
 
                             <div class="ig-time">
-                                {{ ($activity->approved_at ?? $activity->created_at)->diffForHumans() }} • {{ ($activity->approved_at ?? $activity->created_at)->translatedFormat('H:i') }}
+                                <span class="dynamic-time" data-time="{{ ($activity->approved_at ?? $activity->created_at)->toIso8601String() }}" data-format="diffForHumans" data-inner-format="time">
+                                    {{ ($activity->approved_at ?? $activity->created_at)->diffForHumans() }} • {{ ($activity->approved_at ?? $activity->created_at)->translatedFormat('H:i') }}
+                                </span>
                             </div>
                         </div>
 
@@ -1110,7 +1162,7 @@
             <div class="empty-state">
                 <div class="empty-icon">📭</div>
                 <h3>Tidak Ada Kegiatan Ditemukan</h3>
-                <p>Coba ubah filter pencarian atau <a href="{{ route('public.kegiatan') }}">reset semua filter</a>.</p>
+                <p data-i18n="no_results_desc_kegiatan">Coba ubah filter pencarian atau <a href="{{ route('public.kegiatan') }}">reset semua filter</a>.</p>
             </div>
         @endif
     </div>
@@ -1124,7 +1176,7 @@
                     <img src="{{ asset('images/logo_header.png') }}" alt="Logo">
                 </div>
                 <p class="footer-brand-desc" data-i18n="footer_desc">
-                    Portal Kegiatan Harian Kementerian Hak Asasi Manusia Republik Indonesia. Menampilkan kegiatan dan publikasi resmi dari seluruh Unit Kerja.
+                    Portal Kegiatan Harian Kementerian Hak Asasi Manusia Republik Indonesia. Menampilkan kegiatan dan publikasi resmi dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja.
                 </p>
                 <div class="footer-social">
                     <a href="https://www.instagram.com/kemenham/" target="_blank" title="Instagram">
@@ -1149,7 +1201,6 @@
                     <li><a href="{{ url('/') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg> <span data-i18n="nav_home">Beranda</span></a></li>
                     <li><a href="https://kemenham.go.id" target="_blank"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg> <span data-i18n="official_website">Website Resmi</span></a></li>
 
-                    <li><a href="{{ url('/admin') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg> <span data-i18n="nav_login">Login Admin</span></a></li>
                 </ul>
             </div>
 
@@ -1203,39 +1254,86 @@
             }
         }
 
+        // ── Fungsi Perluas Grafik ──
+        let modalChartInstance = null;
+
+        function expandChart(sourceCanvasId, title) {
+            const sourceCanvas = document.getElementById(sourceCanvasId);
+            const sourceChart  = Chart.getChart(sourceCanvas);
+            if (!sourceChart) return;
+
+            // Tampilkan modal
+            const modal = document.getElementById('chartModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+
+            // Set judul
+            document.getElementById('modalChartTitle').textContent = title;
+
+            // Hancurkan chart modal sebelumnya jika ada
+            if (modalChartInstance) { modalChartInstance.destroy(); modalChartInstance = null; }
+
+            // Clone config dari chart asli
+            const modalCanvas = document.getElementById('modalChart');
+            modalChartInstance = new Chart(modalCanvas, {
+                type: sourceChart.config.type,
+                data: JSON.parse(JSON.stringify(sourceChart.config.data)),
+                options: {
+                    ...JSON.parse(JSON.stringify(sourceChart.config.options)),
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        }
+
+        function closeChartModal() {
+            document.getElementById('chartModal').style.display = 'none';
+            document.body.style.overflow = '';
+            if (modalChartInstance) { modalChartInstance.destroy(); modalChartInstance = null; }
+        }
+
+        // Tutup modal saat klik area gelap di luar kotak
+        document.getElementById('chartModal').addEventListener('click', function(e) {
+            if (e.target === this) closeChartModal();
+        });
+
+        // Tutup modal dengan tombol Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeChartModal();
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
-            // Trend Chart
+            // Trend Chart — Grouped Bar per Platform
             const trendCtx = document.getElementById('trendChart').getContext('2d');
             new Chart(trendCtx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: {!! json_encode($trendLabels) !!},
-                    datasets: [{
-                        label: 'Jumlah Kegiatan',
-                        data: {!! json_encode($trendValues) !!},
-                        borderColor: '#0A2B6B',
-                        backgroundColor: 'rgba(10, 43, 107, 0.05)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#0A2B6B',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
+                    datasets: {!! json_encode($trendDatasets) !!}
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false },
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: '#94A3B8',
+                                font: { size: 11 },
+                                boxWidth: 12,
+                                padding: 16,
+                                usePointStyle: true,
+                                pointStyle: 'rect'
+                            }
+                        },
                         tooltip: {
                             backgroundColor: '#0F172A',
                             padding: 12,
                             titleFont: { size: 13, weight: 'bold' },
-                            bodyFont: { size: 13 },
-                            displayColors: false
+                            bodyFont: { size: 12 },
+                            mode: 'index',
+                            intersect: false
                         }
                     },
                     scales: {
@@ -1245,7 +1343,7 @@
                             grid: { borderDash: [5, 5], color: 'rgba(148, 163, 184, 0.1)' }
                         },
                         x: {
-                            ticks: { color: '#94A3B8', font: { size: 11 } },
+                            ticks: { color: '#94A3B8', font: { size: 11 }, maxRotation: 45 },
                             grid: { display: false }
                         }
                     }
@@ -1259,11 +1357,11 @@
             
             // Map labels to human-friendly names and colors
             const platformConfig = {
-                'instagram': { label: 'Instagram', color: '#e1306c' },
-                'youtube': { label: 'YouTube', color: '#FF0000' },
-                'tiktok': { label: 'TikTok', color: '#111111' },
-                'twitter': { label: 'X / Twitter', color: '#111111' },
-                'facebook': { label: 'Facebook', color: '#1877F2' }
+                'instagram': { label: 'Instagram',  color: '#E1306C' },
+                'youtube':   { label: 'YouTube',    color: '#CC0000' },
+                'tiktok':    { label: 'TikTok',     color: '#111111' },
+                'twitter':   { label: 'X / Twitter',color: '#6B7280' },
+                'facebook':  { label: 'Facebook',   color: '#1877F2' }
             };
 
             const colors = platformLabels.map(p => platformConfig[p]?.color || '#94A3B8');

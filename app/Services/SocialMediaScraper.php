@@ -9,12 +9,36 @@ use Illuminate\Support\Facades\Log;
 class SocialMediaScraper
 {
     /**
-     * Main entry point: try multiple scraping strategies.
+     * Whitelist domain yang diizinkan untuk scraping.
+     * Hanya URL dari domain ini yang akan diproses.
+     */
+    protected const ALLOWED_DOMAINS = [
+        // Instagram
+        'instagram.com', 'www.instagram.com',
+        // TikTok
+        'tiktok.com', 'www.tiktok.com', 'vm.tiktok.com',
+        // YouTube
+        'youtube.com', 'www.youtube.com', 'youtu.be', 'm.youtube.com',
+        // Twitter/X
+        'twitter.com', 'www.twitter.com', 'x.com', 'www.x.com',
+        // Facebook
+        'facebook.com', 'www.facebook.com', 'fb.com', 'fb.watch',
+        'm.facebook.com', 'web.facebook.com',
+    ];
+
+    /**
+     * Main entry point: validasi URL lalu scraping.
      *
      * @return array{title: ?string, image: ?string}
      */
     public function scrape(string $url): array
     {
+        // ──── SSRF Protection: Validasi URL ────
+        if (!$this->isUrlSafe($url)) {
+            Log::warning("SSRF BLOCKED: URL ditolak", ['url' => $url]);
+            return ['title' => null, 'image' => null];
+        }
+
         $platform = Platform::detectFromUrl($url);
 
         // Strategy 1: Platform-specific oEmbed
@@ -39,6 +63,71 @@ class SocialMediaScraper
 
         // Strategy 3: Fallback — return empty
         return ['title' => null, 'image' => null];
+    }
+
+    /**
+     * ──── SSRF Protection ────
+     * Validasi URL untuk mencegah Server-Side Request Forgery:
+     * 1. Harus URL valid dengan scheme http/https
+     * 2. Domain harus ada di whitelist
+     * 3. IP address harus bukan private/internal
+     */
+    protected function isUrlSafe(string $url): bool
+    {
+        // 1. Parse URL
+        $parsed = parse_url($url);
+        if (!$parsed || !isset($parsed['scheme'], $parsed['host'])) {
+            return false;
+        }
+
+        // 2. Hanya izinkan http dan https
+        if (!in_array(strtolower($parsed['scheme']), ['http', 'https'], true)) {
+            return false;
+        }
+
+        $host = strtolower($parsed['host']);
+
+        // 3. Cek whitelist domain
+        $isAllowed = false;
+        foreach (self::ALLOWED_DOMAINS as $domain) {
+            if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+                $isAllowed = true;
+                break;
+            }
+        }
+
+        if (!$isAllowed) {
+            Log::warning("SSRF: Domain tidak diizinkan", ['host' => $host, 'url' => $url]);
+            return false;
+        }
+
+        // 4. Resolve DNS dan blokir private/reserved IP
+        $ips = gethostbynamel($host);
+        if ($ips === false) {
+            return false;
+        }
+
+        foreach ($ips as $ip) {
+            if ($this->isPrivateIp($ip)) {
+                Log::warning("SSRF: Private IP terdeteksi", ['host' => $host, 'ip' => $ip]);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Cek apakah IP address termasuk private/reserved range.
+     * Mencegah akses ke jaringan internal (127.0.0.1, 10.x.x.x, 192.168.x.x, dll).
+     */
+    protected function isPrivateIp(string $ip): bool
+    {
+        return filter_var(
+            $ip,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+        ) === false;
     }
 
     /**

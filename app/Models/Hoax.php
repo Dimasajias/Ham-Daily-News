@@ -15,6 +15,7 @@ class Hoax extends Model
 
     protected $fillable = [
         'user_id',
+        'office_id',
         'title',
         'content',
         'source_url',
@@ -38,6 +39,11 @@ class Hoax extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function office(): BelongsTo
+    {
+        return $this->belongsTo(Office::class);
     }
 
     // ──── Scopes ────

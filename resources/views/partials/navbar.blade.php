@@ -11,28 +11,28 @@
 
         <div class="navbar-menu" id="navbarMenu">
             <div class="navbar-links">
-                <a href="{{ url('/') }}" class="active">
+                <a href="{{ url('/') }}" class="{{ request()->routeIs('public.index') ? 'active' : '' }}">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg>
                     <span data-i18n="nav_home">Beranda</span>
                 </a>
 
                 {{-- Dropdown Kegiatan --}}
                 <div class="navbar-dropdown">
-                    <a href="{{ route('public.kegiatan') }}">
+                    <a href="{{ route('public.kegiatan') }}" class="{{ request()->routeIs('public.kegiatan', 'public.show', 'public.export') ? 'active' : '' }}">
                         <div class="nav-link-with-icon">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                            <span data-i18n="activities">Kegiatan</span>
+                            <span data-i18n="activities">Publikasi</span>
                         </div>
                         <svg class="caret" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
                     </a>
                     <div class="dropdown-menu">
                         <a href="{{ route('public.kegiatan') }}">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-                            Semua Kegiatan
+                            <span data-i18n="all_publications">Semua Publikasi</span>
                         </a>
                         <a href="{{ route('public.kegiatan') }}?hari_ini=1">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg>
-                            Hari Ini
+                            <span data-i18n="today_label2">Hari Ini</span>
                         </a>
                         <div class="dropdown-divider"></div>
                         <a href="{{ route('public.kegiatan') }}?platform=instagram">
@@ -60,17 +60,15 @@
 
 
 
-                <a href="{{ route('public.offices') }}">
+                <a href="{{ route('public.offices') }}" class="{{ request()->routeIs('public.offices') ? 'active' : '' }}">
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     <span data-i18n="regional_offices">Kanwil & Wilker</span>
                 </a>
 
-                <a href="{{ route('public.hoax') }}" class="nav-hoax">
+                <a href="{{ route('public.hoax') }}" class="nav-hoax {{ request()->routeIs('public.hoax', 'public.hoax.show') ? 'active' : '' }}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-                    <span>Berita Hoax</span>
+                    <span data-i18n="hoax_news">Berita Hoax</span>
                 </a>
-
-                <a href="https://kemenham.go.id" target="_blank">Website Resmi</a>
             </div>
             
             <div class="navbar-actions">

@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class HoaxResource extends Resource
 {
@@ -66,6 +67,7 @@ class HoaxResource extends Resource
                                     ->directory('hoax')
                                     ->disk('public')
                                     ->imageEditor()
+                                    ->openable()
                                     ->maxSize(5120)
                                     ->helperText('Upload gambar hoax atau tangkapan layar (maks 5MB).'),
 
@@ -125,8 +127,9 @@ class HoaxResource extends Resource
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('Dibuat oleh')
+                    ->label('Disubmit oleh')
                     ->icon('heroicon-o-user')
+                    ->description(fn (Hoax $record) => $record->office?->name ?? 'Pusat')
                     ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
@@ -156,6 +159,19 @@ class HoaxResource extends Resource
             ->emptyStateHeading('Belum ada data berita hoax')
             ->emptyStateDescription('Mulai tambahkan berita hoax dengan tombol di atas.')
             ->emptyStateIcon('heroicon-o-shield-exclamation');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        // Jika bukan admin, hanya bisa melihat data dari office_id miliknya sendiri
+        if (!$user->hasRole('admin')) {
+            $query->where('office_id', $user->office_id);
+        }
+
+        return $query;
     }
 
     public static function getRelations(): array

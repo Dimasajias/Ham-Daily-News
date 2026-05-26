@@ -504,7 +504,7 @@
             <div class="brand-content">
                 <img src="{{ asset('images/logo_header.png') }}" alt="Logo" class="brand-logo">
                 <h1 class="brand-title">HAM DAILY <span class="accent">NEWS</span></h1>
-                <p class="brand-subtitle">Portal agregasi kegiatan harian dari seluruh Unit Kerja Kementerian Hak Asasi Manusia di Indonesia.</p>
+                <p class="brand-subtitle">Portal agregasi kegiatan harian dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja Kementerian Hak Asasi Manusia di Indonesia.</p>
 
                 <div class="brand-features">
                     <div class="brand-feature">

@@ -71,11 +71,12 @@ class UserResource extends Resource
                         ->password()
                         ->dehydrated(fn ($state) => filled($state))
                         ->required(fn (string $context) => $context === 'create')
+                        ->rule(\Illuminate\Validation\Rules\Password::defaults())
                         ->prefixIcon('heroicon-o-lock-closed')
-                        ->helperText('Kosongkan jika tidak ingin mengubah password.'),
+                        ->helperText('Min. 8 karakter, wajib huruf besar, huruf kecil, angka, dan simbol.'),
 
                     Forms\Components\Select::make('office_id')
-                        ->label('Kantor Wilayah')
+                        ->label('Unit Kerja')
                         ->relationship('office', 'name')
                         ->searchable()
                         ->preload()
@@ -122,7 +123,7 @@ class UserResource extends Resource
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('office.name')
-                    ->label('Kantor Wilayah')
+                    ->label('Unit Kerja')
                     ->icon('heroicon-o-building-office-2')
                     ->sortable()
                     ->placeholder('— Pusat —'),

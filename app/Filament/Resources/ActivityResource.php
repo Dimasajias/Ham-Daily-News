@@ -9,6 +9,8 @@ use App\Jobs\ScrapeActivityJob;
 use App\Models\Activity;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -54,7 +56,7 @@ class ActivityResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('📝 Informasi Publikasi')
-                    ->description(new HtmlString('Isi data kegiatan yang akan diterbitkan. <span style="color: #E11D48; font-weight: 600;">⏰ Batas waktu submit: pukul 16:00 waktu setempat.</span>'))
+                    ->description('Isi data kegiatan yang akan diterbitkan.')
                     ->icon('heroicon-o-document-text')
                     ->collapsible()
                     ->schema([
@@ -73,13 +75,50 @@ class ActivityResource extends Resource
                             ->rows(4)
                             ->columnSpanFull(),
 
-                        Forms\Components\TextInput::make('social_media_url')
-                            ->label('Link Media Sosial')
-                            ->required()
-                            ->url()
-                            ->placeholder('https://www.instagram.com/p/...')
-                            ->helperText('Tempel URL Instagram, TikTok, YouTube, dsb.')
-                            ->prefixIcon('heroicon-o-link')
+                        // ──── Multi-Link Media Sosial ────
+                        Forms\Components\Repeater::make('social_media_links')
+                            ->label('🔗 Link Media Sosial')
+                            ->schema([
+                                Forms\Components\Select::make('platform')
+                                    ->label('Platform')
+                                    ->options([
+                                        'instagram' => '📸 Instagram',
+                                        'tiktok'    => '🎵 TikTok',
+                                        'youtube'   => '▶️ YouTube',
+                                        'twitter'   => '🐦 Twitter / X',
+                                        'facebook'  => '📘 Facebook',
+                                        'other'     => '🔗 Lainnya',
+                                    ])
+                                    ->required()
+                                    ->native(false)
+                                    ->searchable(),
+
+                                Forms\Components\TextInput::make('url')
+                                    ->label('URL')
+                                    ->required()
+                                    ->url()
+                                    ->placeholder('https://www.instagram.com/p/...')
+                                    ->prefixIcon('heroicon-o-link'),
+                            ])
+                            ->columns(2)
+                            ->minItems(1)
+                            ->maxItems(6)
+                            ->defaultItems(1)
+                            ->addActionLabel('+ Tambah Link Sosmed')
+                            ->reorderable(false)
+                            ->collapsible()
+                            ->itemLabel(fn (array $state): ?string =>
+                                match ($state['platform'] ?? null) {
+                                    'instagram' => '📸 Instagram',
+                                    'tiktok'    => '🎵 TikTok',
+                                    'youtube'   => '▶️ YouTube',
+                                    'twitter'   => '🐦 Twitter / X',
+                                    'facebook'  => '📘 Facebook',
+                                    'other'     => '🔗 Lainnya',
+                                    default     => 'Link Media Sosial',
+                                }
+                            )
+                            ->helperText('Masukkan semua link media sosial untuk kegiatan ini. Satu kegiatan bisa memiliki banyak link dari platform berbeda.')
                             ->columnSpanFull(),
 
                         Forms\Components\Grid::make(1)
@@ -90,7 +129,10 @@ class ActivityResource extends Resource
                                     ->image()
                                     ->directory('dokumentasi')
                                     ->disk('public')
+                                    ->visibility('public')
                                     ->imageEditor()
+                                    ->openable()
+                                    ->previewable(true)
                                     ->maxSize(5120)
                                     ->helperText('Upload foto (maks 5MB). Akan dikompres otomatis.')
                                     ->columnSpanFull(),
@@ -103,13 +145,6 @@ class ActivityResource extends Resource
                     ->collapsible()
                     ->collapsed()
                     ->schema([
-                        Forms\Components\Select::make('platform')
-                            ->label('Platform')
-                            ->options(Platform::class)
-                            ->disabled()
-                            ->dehydrated()
-                            ->prefixIcon('heroicon-o-globe-alt'),
-
                         Forms\Components\Textarea::make('extracted_title')
                             ->label('Judul / Caption')
                             ->rows(3),
@@ -141,6 +176,118 @@ class ActivityResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Informasi Kegiatan')
+                    ->icon('heroicon-o-information-circle')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('extracted_title')
+                            ->label('Judul Kegiatan')
+                            ->size(Infolists\Components\TextEntry\TextEntrySize::Large)
+                            ->weight('bold')
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('description')
+                            ->label('Deskripsi / Keterangan')
+                            ->placeholder('Tidak ada deskripsi.')
+                            ->markdown()
+                            ->columnSpanFull(),
+
+                        Infolists\Components\TextEntry::make('office.name')
+                            ->label('Unit Kerja')
+                            ->icon('heroicon-m-building-office-2'),
+
+                        Infolists\Components\TextEntry::make('user.name')
+                            ->label('Dilaporkan Oleh')
+                            ->icon('heroicon-m-user'),
+
+                        Infolists\Components\TextEntry::make('status')
+                            ->label('Status Publikasi')
+                            ->badge()
+                            ->color(fn (ActivityStatus $state): string => match ($state) {
+                                ActivityStatus::Draft => 'gray',
+                                ActivityStatus::Pending => 'warning',
+                                ActivityStatus::Approved => 'success',
+                                ActivityStatus::Rejected => 'danger',
+                            })
+                            ->icon(fn (ActivityStatus $state) => $state->icon()),
+
+                        Infolists\Components\TextEntry::make('created_at')
+                            ->label('Waktu Submit')
+                            ->dateTime('d M Y, H:i')
+                            ->icon('heroicon-m-clock'),
+                    ])
+                    ->columns(2),
+
+                Infolists\Components\Section::make('Media Sosial & Tautan')
+                    ->icon('heroicon-o-link')
+                    ->schema([
+                        Infolists\Components\RepeatableEntry::make('social_media_links')
+                            ->label('Daftar Tautan Publikasi')
+                            ->schema([
+                                Infolists\Components\TextEntry::make('platform')
+                                    ->label('Platform')
+                                    ->formatStateUsing(fn ($state) => match ($state) {
+                                        'instagram' => '📸 Instagram',
+                                        'tiktok'    => '🎵 TikTok',
+                                        'youtube'   => '▶️ YouTube',
+                                        'twitter'   => '🐦 Twitter / X',
+                                        'facebook'  => '📘 Facebook',
+                                        'other'     => '🔗 Lainnya',
+                                        default     => ucfirst($state),
+                                    })
+                                    ->badge()
+                                    ->color(fn ($state) => match ($state) {
+                                        'instagram' => 'danger',
+                                        'tiktok'    => 'gray',
+                                        'youtube'   => 'danger',
+                                        'twitter'   => 'info',
+                                        'facebook'  => 'primary',
+                                        default     => 'secondary',
+                                    }),
+                                Infolists\Components\TextEntry::make('url')
+                                    ->label('URL Tautan')
+                                    ->url(fn ($state) => $state)
+                                    ->color('primary')
+                                    ->openUrlInNewTab(),
+                            ])
+                            ->columns(2)
+                            ->grid(2)
+                            ->columnSpanFull(),
+                    ]),
+
+                Infolists\Components\Section::make('Dokumentasi Kegiatan')
+                    ->icon('heroicon-o-photo')
+                    ->schema([
+                        Infolists\Components\ImageEntry::make('foto_dokumentasi')
+                            ->label('')
+                            ->hiddenLabel()
+                            ->width('100%')
+                            ->height(400)
+                            ->extraImgAttributes([
+                                'style' => 'object-fit: contain; background-color: #f3f4f6; border-radius: 0.5rem; cursor: zoom-in;',
+                                'title' => 'Klik untuk melihat gambar ukuran penuh'
+                            ])
+                            ->url(fn ($record) => $record->foto_dokumentasi ? asset('storage/' . $record->foto_dokumentasi) : null)
+                            ->openUrlInNewTab()
+                            ->columnSpanFull(),
+                    ]),
+
+                Infolists\Components\Section::make('Alasan Penolakan')
+                    ->icon('heroicon-o-exclamation-triangle')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('rejection_reason')
+                            ->label('')
+                            ->hiddenLabel()
+                            ->color('danger')
+                            ->columnSpanFull(),
+                    ])
+                    ->visible(fn (?Activity $record) => $record?->status === ActivityStatus::Rejected),
+            ]);
+    }
+
     public static function table(Table $table): Table
     {
         $user = auth()->user();
@@ -162,22 +309,19 @@ class ActivityResource extends Resource
                     ->weight('medium')
                     ->description(fn (Activity $record) => $record->office?->name ?? '-'),
 
-                Tables\Columns\TextColumn::make('platform')
+                // Multi-platform badges
+                Tables\Columns\TextColumn::make('social_media_links')
+                    ->label('Platform')
                     ->badge()
-                    ->color(fn (Platform $state): string => match ($state) {
-                        Platform::Instagram => 'danger',
-                        Platform::Twitter => 'gray',
-                        Platform::TikTok => 'gray',
-                        Platform::YouTube => 'danger',
-                        Platform::Facebook => 'info',
-                        default => 'primary',
+                    ->formatStateUsing(function ($state, Activity $record) {
+                        $platforms = $record->getPlatforms();
+                        if (empty($platforms)) {
+                            return '—';
+                        }
+                        return collect($platforms)->map(fn (Platform $p) => $p->label())->join(', ');
                     })
-                    ->formatStateUsing(fn (Platform $state) => $state->icon() . ' ' . $state->label())
+                    ->color('primary')
                     ->alignCenter(),
-
-
-
-
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Pelapor')
@@ -216,7 +360,7 @@ class ActivityResource extends Resource
                     ->label('Status Publikasi')
                     ->getTitleFromRecordUsing(fn (Activity $record): string => $record->status->label()),
                 Tables\Grouping\Group::make('office.name')
-                    ->label('Kanwil Asal'),
+                    ->label('Unit Kerja Asal'),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
@@ -227,19 +371,27 @@ class ActivityResource extends Resource
 
                 Tables\Filters\SelectFilter::make('platform')
                     ->label('Platform')
-                    ->options(Platform::class)
+                    ->options(
+                        collect(Platform::cases())
+                            ->mapWithKeys(fn (Platform $p) => [$p->value => $p->label()])
+                            ->toArray()
+                    )
+                    ->query(function (Builder $query, array $data) {
+                        if (!empty($data['value'])) {
+                            $query->whereRaw(
+                                "JSON_CONTAINS(social_media_links, JSON_OBJECT('platform', ?))",
+                                [$data['value']]
+                            );
+                        }
+                    })
                     ->indicator('Platform'),
 
                 Tables\Filters\SelectFilter::make('office_id')
-                    ->label('Kanwil')
-                    ->relationship('office', 'name')
+                    ->label('Unit Kerja')
+                    ->relationship('office', 'name', fn ($query) => $query->orderByRaw("CASE WHEN name LIKE 'Kementerian%' THEN 0 ELSE 1 END")->orderBy('name'))
                     ->searchable()
                     ->preload()
-                    ->indicator('Kanwil'),
-
-
-
-
+                    ->indicator('Unit Kerja'),
             ])
             ->filtersFormColumns(3)
             ->actions([
@@ -281,23 +433,42 @@ class ActivityResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->iconButton()
                     ->tooltip('Edit')
-                    ->visible(fn (Activity $record) => $record->status === ActivityStatus::Draft || $record->status === ActivityStatus::Rejected),
+                    ->visible(fn (Activity $record) => in_array($record->status, [
+                        ActivityStatus::Draft,
+                        ActivityStatus::Pending,
+                        ActivityStatus::Approved,
+                        ActivityStatus::Rejected
+                    ])),
+
+                Tables\Actions\DeleteAction::make()
+                    ->iconButton()
+                    ->tooltip('Hapus')
+                    ->visible(fn (Activity $record) => in_array($record->status, [
+                        ActivityStatus::Draft,
+                        ActivityStatus::Pending,
+                        ActivityStatus::Approved,
+                        ActivityStatus::Rejected
+                    ])),
             ])
             ->bulkActions([
-                Tables\Actions\BulkAction::make('bulkApprove')
-                    ->label('Setujui Terpilih')
-                    ->icon('heroicon-o-check-circle')
-                    ->color('success')
-                    ->requiresConfirmation()
-                    ->modalIcon('heroicon-o-check-badge')
-                    ->modalHeading('Setujui Kegiatan Terpilih')
-                    ->modalDescription('Semua kegiatan yang dipilih akan dipublikasikan di halaman portal.')
-                    ->action(function ($records) {
-                        $admin = auth()->user();
-                        $records->each(fn (Activity $record) => $record->approve($admin));
-                    })
-                    ->visible(fn () => $isAdmin)
-                    ->deselectRecordsAfterCompletion(),
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('bulkApprove')
+                        ->label('Setujui Terpilih')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->modalIcon('heroicon-o-check-badge')
+                        ->modalHeading('Setujui Kegiatan Terpilih')
+                        ->modalDescription('Semua kegiatan yang dipilih akan dipublikasikan di halaman portal.')
+                        ->action(function ($records) {
+                            $admin = auth()->user();
+                            $records->each(fn (Activity $record) => $record->approve($admin));
+                        })
+                        ->visible(fn () => $isAdmin)
+                        ->deselectRecordsAfterCompletion(),
+
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
             ])
             ->emptyStateHeading('Belum ada kegiatan')
             ->emptyStateDescription('Mulai submit kegiatan baru dengan tombol di atas.')
@@ -326,6 +497,7 @@ class ActivityResource extends Resource
         return [
             'index' => Pages\ListActivities::route('/'),
             'create' => Pages\CreateActivity::route('/create'),
+            'view' => Pages\ViewActivity::route('/{record}'),
             'edit' => Pages\EditActivity::route('/{record}/edit'),
         ];
     }

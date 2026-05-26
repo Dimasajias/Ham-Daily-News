@@ -475,7 +475,9 @@
         <div class="article-meta">
             <div class="meta-item">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/></svg>
-                {{ $hoax->published_at?->translatedFormat('d F Y') ?? $hoax->created_at->translatedFormat('d F Y') }}
+                <span class="dynamic-time" data-time="{{ ($hoax->published_at ?? $hoax->created_at)->toIso8601String() }}" data-format="date">
+                    {{ ($hoax->published_at ?? $hoax->created_at)->translatedFormat('d F Y') }}
+                </span>
             </div>
             @if($hoax->user)
             <div class="meta-item">

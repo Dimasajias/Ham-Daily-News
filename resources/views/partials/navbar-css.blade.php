@@ -3,14 +3,14 @@
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 2000;
-            height: 70px;
+            height: 72px;
             padding: 0 max(2rem, calc((100% - 1200px) / 2));
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: var(--white);
-            border-bottom: 1px solid var(--gray-200);
-            transition: all 0.4s ease;
+            border-bottom: 1px solid var(--gray-100);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: 'Outfit', sans-serif;
         }
 

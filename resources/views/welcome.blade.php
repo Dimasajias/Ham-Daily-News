@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAM DAILY NEWS (HAMDANS) — Portal Kegiatan Harian Kemenham</title>
     <link rel="icon" href="{{ asset('images/logo_kemenham.png') }}" type="image/png">
-    <meta name="description" content="Portal agregasi kegiatan harian Kementerian Hak Asasi Manusia dari seluruh Kantor Wilayah di Indonesia.">
+    <meta name="description" content="Portal agregasi kegiatan harian dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja Kementerian Hak Asasi Manusia di Indonesia.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -177,19 +177,19 @@
         .stats-row {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1.5rem;
             width: auto;
             flex-shrink: 0;
             animation: heroFadeIn 0.7s ease 0.15s both;
         }
 
         .stat {
-            width: 420px;
+            width: 380px;
             padding: 1.5rem 2rem;
             text-align: left;
             background: var(--white);
             border-radius: 20px;
-            border: 1px solid rgba(0,0,0,0.05);
+            border: 1px solid rgba(10, 43, 107, 0.04);
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
@@ -605,23 +605,30 @@
 
         /* ──── IG FEED ──── */
         .ig-feed-container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            padding-bottom: 2rem;
+            gap: 32px;
+            padding-bottom: 3rem;
         }
 
         .ig-post {
             background: var(--white);
             border: 1px solid var(--gray-200);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             text-decoration: none;
             color: inherit;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .ig-post:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-100);
         }
 
         .ig-post-header {
@@ -1018,7 +1025,7 @@
             <div class="hero-content">
 
                 <h1 class="hero-title" data-i18n="hero_title">Portal Kegiatan Harian Kemenham</h1>
-                <p class="hero-tagline" data-i18n="hero_desc">Portal agregasi kegiatan harian dari seluruh Kantor Wilayah Kementerian Hak Asasi Manusia di Indonesia. Konten dikurasi langsung dari media sosial resmi.</p>
+                <p class="hero-tagline" data-i18n="hero_desc">Portal agregasi kegiatan harian dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja Kementerian Hak Asasi Manusia di Indonesia. Konten dikurasi langsung dari media sosial resmi.</p>
                 <a href="{{ route('public.kegiatan') }}" class="hero-cta">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
                     <span data-i18n="hero_cta">Lihat Kegiatan</span>
@@ -1069,7 +1076,7 @@
                 <div class="filter-search-row">
                     <div class="filter-search-input">
                         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                        <input type="text" name="cari" placeholder="Cari kegiatan..." value="{{ request('cari') }}">
+                        <input type="text" name="cari" placeholder="Cari kegiatan..." data-i18n-placeholder="search_placeholder" value="{{ request('cari') }}">
                     </div>
 
                     @php
@@ -1178,9 +1185,11 @@
                         $imgSrc = $activity->foto_dokumentasi
                             ? asset('storage/' . $activity->foto_dokumentasi)
                             : $activity->extracted_image;
-                        $pVal = strtolower($activity->platform?->value ?? 'other');
+                        $firstPlatform = $activity->getFirstPlatform();
+                        $pVal = strtolower($firstPlatform?->value ?? 'other');
                         $officeName = $activity->office?->name ?? 'Kemenham';
                         $avatarClasses = 'ig-avatar platform-' . $pVal;
+                        $allPlatforms = $activity->getPlatforms();
                     @endphp
                     <div class="ig-post">
                         
@@ -1204,7 +1213,7 @@
                                 </div>
                                 <div>
                                     <div class="ig-username">{{ $officeName }}</div>
-                                    <div class="ig-location">{{ $activity->platform?->label() ?? 'Portal Berita' }}</div>
+                                    <div class="ig-location">{!! collect($allPlatforms)->map(fn ($p) => $p->label())->join(' &middot; ') ?: '<span data-i18n="portal_berita">Portal Berita</span>' !!}</div>
                                 </div>
                             </div>
                         </div>
@@ -1215,7 +1224,7 @@
                                 <img src="{{ $imgSrc }}" alt="Kegiatan" loading="lazy">
                             @else
                                 <div style="display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: linear-gradient(145deg, var(--primary), var(--primary-dark)); font-size: 5rem;">
-                                    {{ $activity->platform?->icon() ?? '🔗' }}
+                                    🔗
                                 </div>
                             @endif
                         </div>
@@ -1231,7 +1240,9 @@
                             </div>
 
                             <div class="ig-time">
-                                {{ ($activity->approved_at ?? $activity->created_at)->diffForHumans() }} • {{ ($activity->approved_at ?? $activity->created_at)->translatedFormat('H:i') }}
+                                <span class="dynamic-time" data-time="{{ ($activity->approved_at ?? $activity->created_at)->toIso8601String() }}" data-format="diffForHumans" data-inner-format="time">
+                                    {{ ($activity->approved_at ?? $activity->created_at)->diffForHumans() }} • {{ ($activity->approved_at ?? $activity->created_at)->translatedFormat('H:i') }}
+                                </span>
                             </div>
                         </div>
 
@@ -1260,7 +1271,7 @@
                     <img src="{{ asset('images/logo_header.png') }}" alt="Logo">
                 </div>
                 <p class="footer-brand-desc" data-i18n="footer_desc">
-                    Portal Kegiatan Harian Kementerian Hak Asasi Manusia Republik Indonesia. Menampilkan kegiatan dan publikasi resmi dari seluruh Unit Kerja.
+                    Portal Kegiatan Harian Kementerian Hak Asasi Manusia Republik Indonesia. Menampilkan kegiatan dan publikasi resmi dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja.
                 </p>
                 <div class="footer-social">
                     <a href="https://www.instagram.com/kemenham/" target="_blank" title="Instagram">
@@ -1285,7 +1296,6 @@
                     <li><a href="{{ url('/') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg> <span data-i18n="nav_home">Beranda</span></a></li>
                     <li><a href="https://kemenham.go.id" target="_blank"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg> <span data-i18n="official_website">Website Resmi</span></a></li>
 
-                    <li><a href="{{ url('/admin') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg> <span data-i18n="nav_login">Login Admin</span></a></li>
                 </ul>
             </div>
 

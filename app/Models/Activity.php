@@ -17,8 +17,7 @@ class Activity extends Model
         'user_id',
         'office_id',
 
-        'social_media_url',
-        'platform',
+        'social_media_links',
         'extracted_title',
         'description',
         'extracted_image',
@@ -32,9 +31,9 @@ class Activity extends Model
     protected function casts(): array
     {
         return [
-            'status' => ActivityStatus::class,
-            'platform' => Platform::class,
-            'approved_at' => 'datetime',
+            'status'             => ActivityStatus::class,
+            'social_media_links' => 'array',
+            'approved_at'        => 'datetime',
         ];
     }
 
@@ -53,6 +52,72 @@ class Activity extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    // ──── Social Media Link Helpers ────
+
+    /**
+     * Ambil semua platform yang ada di kegiatan ini.
+     *
+     * @return Platform[]
+     */
+    public function getPlatforms(): array
+    {
+        $links = $this->social_media_links ?? [];
+        $platforms = [];
+
+        foreach ($links as $link) {
+            $platformValue = $link['platform'] ?? 'other';
+            $platform = Platform::tryFrom($platformValue);
+            if ($platform && !in_array($platform, $platforms, true)) {
+                $platforms[] = $platform;
+            }
+        }
+
+        return $platforms;
+    }
+
+    /**
+     * Ambil URL untuk platform tertentu.
+     */
+    public function getUrlForPlatform(Platform $platform): ?string
+    {
+        $links = $this->social_media_links ?? [];
+
+        foreach ($links as $link) {
+            if (($link['platform'] ?? '') === $platform->value) {
+                return $link['url'] ?? null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Cek apakah kegiatan memiliki link untuk platform tertentu.
+     */
+    public function hasPlatform(Platform $platform): bool
+    {
+        return $this->getUrlForPlatform($platform) !== null;
+    }
+
+    /**
+     * Ambil URL pertama yang tersedia (fallback).
+     */
+    public function getFirstUrl(): ?string
+    {
+        $links = $this->social_media_links ?? [];
+        return $links[0]['url'] ?? null;
+    }
+
+    /**
+     * Ambil platform pertama yang tersedia (fallback).
+     */
+    public function getFirstPlatform(): ?Platform
+    {
+        $links = $this->social_media_links ?? [];
+        $val = $links[0]['platform'] ?? null;
+        return $val ? Platform::tryFrom($val) : null;
     }
 
     // ──── Scopes ────
@@ -98,9 +163,13 @@ class Activity extends Model
             $query->whereDate('approved_at', today());
         }
 
-        // Filter by platform
+        // Filter by platform (search in JSON array)
         if ($request->filled('platform')) {
-            $query->where('platform', $request->platform);
+            $platform = $request->platform;
+            $query->whereRaw(
+                "JSON_CONTAINS(social_media_links, JSON_OBJECT('platform', ?))",
+                [$platform]
+            );
         }
 
         return $query;
@@ -111,9 +180,9 @@ class Activity extends Model
     public function approve(User $admin): void
     {
         $this->update([
-            'status' => ActivityStatus::Approved,
-            'approved_by' => $admin->id,
-            'approved_at' => now(),
+            'status'           => ActivityStatus::Approved,
+            'approved_by'      => $admin->id,
+            'approved_at'      => $this->approved_at ?? now(), // Tetap pakai tanggal lama jika sudah ada
             'rejection_reason' => null,
         ]);
     }
@@ -121,9 +190,11 @@ class Activity extends Model
     public function reject(User $admin, string $reason): void
     {
         $this->update([
-            'status' => ActivityStatus::Rejected,
-            'approved_by' => $admin->id,
-            'approved_at' => now(),
+            'status'           => ActivityStatus::Rejected,
+            'approved_by'      => $admin->id,
+            // Jika sudah pernah approve, biarkan tanggalnya tetap untuk record, 
+            // tapi statusnya sudah berubah jadi Rejected sehingga tidak tampil di publik.
+            'approved_at'      => $this->approved_at ?? now(), 
             'rejection_reason' => $reason,
         ]);
     }

@@ -26,20 +26,37 @@ class ScrapeActivityJob implements ShouldQueue
 
     public function handle(SocialMediaScraper $scraper): void
     {
-        Log::info("Scraping activity #{$this->activity->id}: {$this->activity->social_media_url}");
+        $links = $this->activity->social_media_links ?? [];
 
-        // Detect platform
-        $platform = Platform::detectFromUrl($this->activity->social_media_url);
+        if (empty($links)) {
+            Log::info("No links to scrape for activity #{$this->activity->id}");
+            $this->activity->update(['status' => ActivityStatus::Pending]);
+            return;
+        }
 
-        // Scrape metadata
-        $data = $scraper->scrape($this->activity->social_media_url);
+        Log::info("Scraping activity #{$this->activity->id}: " . count($links) . " links");
 
-        // Update the activity
+        // Coba scrape dari link pertama yang berhasil
+        $data = ['title' => null, 'image' => null];
+
+        foreach ($links as $link) {
+            $url = $link['url'] ?? null;
+            if (!$url) continue;
+
+            $result = $scraper->scrape($url);
+
+            if ($result['title'] || $result['image']) {
+                $data = $result;
+                Log::info("Scrape success from: {$url}", $result);
+                break;
+            }
+        }
+
+        // Update activity
         $this->activity->update([
-            'platform' => $platform,
-            'extracted_title' => $data['title'],
+            'extracted_title' => $data['title'] ?: $this->activity->extracted_title,
             'extracted_image' => $data['image'],
-            'status' => ActivityStatus::Pending,
+            'status'          => ActivityStatus::Pending,
         ]);
 
         Log::info("Scraping complete for activity #{$this->activity->id}", $data);

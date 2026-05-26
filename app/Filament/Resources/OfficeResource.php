@@ -16,11 +16,11 @@ class OfficeResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $navigationLabel = 'Kanwil dan Wilker';
+    protected static ?string $navigationLabel = 'Unit Kerja';
 
-    protected static ?string $modelLabel = 'Kanwil dan Wilker';
+    protected static ?string $modelLabel = 'Unit Kerja';
 
-    protected static ?string $pluralModelLabel = 'Kanwil dan Wilker';
+    protected static ?string $pluralModelLabel = 'Unit Kerja';
 
     protected static ?string $navigationGroup = 'Administrasi';
 
@@ -44,16 +44,16 @@ class OfficeResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('🏛️ Data Kanwil dan Wilker')
-                ->description('Informasi dasar kanwil dan wilker.')
+            Forms\Components\Section::make('🏛️ Data Unit Kerja')
+                ->description('Informasi dasar unit kerja.')
                 ->icon('heroicon-o-building-office-2')
                 ->columns(3)
                 ->schema([
                     Forms\Components\TextInput::make('name')
-                        ->label('Nama Kanwil')
+                        ->label('Nama Unit Kerja')
                         ->required()
                         ->maxLength(255)
-                        ->placeholder('Contoh: Kanwil Aceh')
+                        ->placeholder('Contoh: Kanwil Aceh atau Satker XYZ')
                         ->prefixIcon('heroicon-o-building-office')
                         ->columnSpan(2),
 
@@ -80,7 +80,7 @@ class OfficeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Nama Kanwil dan Wilker')
+                    ->label('Nama Unit Kerja')
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
@@ -111,10 +111,10 @@ class OfficeResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->iconButton()
-                    ->tooltip('Edit Kanwil dan Wilker'),
+                    ->tooltip('Edit Unit Kerja'),
             ])
-            ->emptyStateHeading('Belum ada kanwil dan wilker')
-            ->emptyStateDescription('Tambahkan kanwil dan wilker untuk mulai mengelola data.')
+            ->emptyStateHeading('Belum ada unit kerja')
+            ->emptyStateDescription('Tambahkan unit kerja untuk mulai mengelola data.')
             ->emptyStateIcon('heroicon-o-building-office-2');
     }
 

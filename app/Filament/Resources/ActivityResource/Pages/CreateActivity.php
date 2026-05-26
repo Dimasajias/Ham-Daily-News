@@ -22,10 +22,21 @@ class CreateActivity extends CreateRecord
         $data['office_id'] = $user->office_id ?? 1;
         $data['status'] = ActivityStatus::Pending;
 
-
-        // Detect platform only if URL is provided
-        if (!empty($data['social_media_url'])) {
-            $data['platform'] = Platform::detectFromUrl($data['social_media_url']);
+        // Auto-detect platform dari URL jika user memilih 'other' atau tidak memilih
+        if (!empty($data['social_media_links'])) {
+            $data['social_media_links'] = collect($data['social_media_links'])
+                ->map(function ($link) {
+                    if (empty($link['platform']) || $link['platform'] === 'other') {
+                        $detected = Platform::detectFromUrl($link['url'] ?? '');
+                        if ($detected !== Platform::Other) {
+                            $link['platform'] = $detected->value;
+                        }
+                    }
+                    return $link;
+                })
+                ->filter(fn ($link) => !empty($link['url'])) // Hapus entry tanpa URL
+                ->values()
+                ->toArray();
         }
 
         return $data;
@@ -33,8 +44,9 @@ class CreateActivity extends CreateRecord
 
     protected function afterCreate(): void
     {
-        // Dispatch scraping job only if there's a URL to scrape
-        if ($this->record->social_media_url) {
+        // Dispatch scraping job jika ada link
+        $links = $this->record->social_media_links ?? [];
+        if (!empty($links)) {
             ScrapeActivityJob::dispatch($this->record);
         }
 

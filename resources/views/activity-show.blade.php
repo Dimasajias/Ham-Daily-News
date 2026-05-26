@@ -315,11 +315,18 @@
             height: 20px;
         }
 
+        .source-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
         .source-header-text {
             font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.12em;
             color: var(--primary);
             margin-bottom: 1.5rem;
         }
@@ -720,14 +727,29 @@
         <!-- Title Card (always shown below image) -->
         <div class="title-card">
             <div class="hero-meta">
-                <span class="platform-badge platform-{{ strtolower($activity->platform?->value ?? 'other') }}">
-                    {{ $activity->platform?->icon() }} {{ $activity->platform?->label() }}
-                </span>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    @php $allPlatforms = $activity->getPlatforms(); @endphp
+                    @if(empty($allPlatforms))
+                        <span class="platform-badge platform-other">🔗 Lainnya</span>
+                    @else
+                        @foreach($allPlatforms as $p)
+                            <span class="platform-badge platform-{{ strtolower($p->value) }}">
+                                {!! $p->icon() !!} {{ $p->label() }}
+                            </span>
+                        @endforeach
+                    @endif
+                </div>
             </div>
             <h1 class="hero-title">{{ $activity->extracted_title ?? 'Kegiatan Kementerian HAM' }}</h1>
             <div class="hero-date">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
-                {{ $activity->approved_at?->isoFormat('D MMMM YYYY, HH:mm') ?? '-' }}
+                @if($activity->approved_at)
+                    <span class="dynamic-time" data-time="{{ $activity->approved_at->toIso8601String() }}" data-format="full">
+                        {{ $activity->approved_at->isoFormat('D MMMM YYYY, HH:mm') }}
+                    </span>
+                @else
+                    -
+                @endif
             </div>
         </div>
 
@@ -747,7 +769,15 @@
             <div class="info-card">
                 <div class="info-card-icon time">⏱️</div>
                 <div class="info-card-label" data-i18n="approved">Disetujui</div>
-                <div class="info-card-value">{{ $activity->approved_at?->translatedFormat('H:i') ?? '-' }}</div>
+                <div class="info-card-value">
+                    @if($activity->approved_at)
+                        <span class="dynamic-time" data-time="{{ $activity->approved_at->toIso8601String() }}" data-format="time">
+                            {{ $activity->approved_at->translatedFormat('H:i') }}
+                        </span>
+                    @else
+                        -
+                    @endif
+                </div>
             </div>
             <div class="info-card">
                 <div class="info-card-icon office">🏛️</div>
@@ -757,20 +787,38 @@
         </div>
 
         <!-- ─── Source Link ─── -->
-        @if($activity->social_media_url)
+        @php
+            $links = $activity->social_media_links ?? [];
+        @endphp
+        @if(!empty($links))
         <div class="source-section">
             <div class="source-header">
                 <div class="source-header-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                 </div>
-                <span class="source-header-text" data-i18n="source">Sumber Asli</span>
+                <span class="source-header-text">ORIGINAL SOURCE</span>
             </div>
-            <div class="source-body">
-                <a href="{{ $activity->social_media_url }}" target="_blank" rel="noopener" class="source-link">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    {{ $activity->social_media_url }}
-                    <svg class="arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="m9 18 6-6-6-6"/></svg>
-                </a>
+            <div class="source-body" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                @foreach($links as $link)
+                    @php
+                        $platformVal = $link['platform'] ?? 'other';
+                        $platformEnum = \App\Enums\Platform::tryFrom($platformVal);
+                        $platformLabel = $platformEnum?->label() ?? ucfirst($platformVal);
+                        $platformIcon = $platformEnum?->icon() ?? '';
+                    @endphp
+                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span style="font-size: 0.7rem; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.25rem;">{{ $platformLabel }}</span>
+                        <a href="{{ $link['url'] ?? '#' }}" target="_blank" rel="noopener" class="source-link">
+                            @if($platformIcon)
+                                {!! $platformIcon !!}
+                            @else
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            @endif
+                            <span data-i18n="official_source">Sumber Resmi</span> <span>{{ $platformLabel }}</span>
+                            <svg class="arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="m9 18 6-6-6-6"/></svg>
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
         @endif
@@ -818,7 +866,6 @@
                     <li><a href="{{ url('/') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4"/></svg> <span data-i18n="nav_home">Beranda</span></a></li>
                     <li><a href="https://kemenham.go.id" target="_blank"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg> <span data-i18n="official_website">Website Resmi</span></a></li>
 
-                    <li><a href="{{ url('/admin') }}"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg> <span data-i18n="nav_login">Login Admin</span></a></li>
                 </ul>
             </div>
 

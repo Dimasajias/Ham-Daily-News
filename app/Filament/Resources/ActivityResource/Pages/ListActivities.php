@@ -14,7 +14,7 @@ class ListActivities extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-                ->label('✏️ Submit Kegiatan')
+                ->label('Submit Kegiatan')
                 ->icon('heroicon-o-plus-circle'),
         ];
     }

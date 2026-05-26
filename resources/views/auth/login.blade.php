@@ -507,6 +507,48 @@
                 .btn-login { height: 46px; }
             }
 
+            /* ──── CAPTCHA ──── */
+            .captcha-challenge {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .captcha-question {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 0 16px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+                border-radius: 12px;
+                color: #ffffff;
+                font-size: 0.95rem;
+                font-weight: 700;
+                white-space: nowrap;
+                letter-spacing: 0.05em;
+                min-width: 140px;
+                justify-content: center;
+                box-shadow: 0 4px 12px rgba(10, 43, 107, 0.2);
+            }
+
+            .captcha-question svg {
+                color: var(--accent);
+                flex-shrink: 0;
+            }
+
+            .captcha-input {
+                font-variant-numeric: tabular-nums;
+            }
+
+            /* Remove number input arrows */
+            .captcha-input::-webkit-inner-spin-button,
+            .captcha-input::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .captcha-input { -moz-appearance: textfield; }
+
             /* ──── Animations ──── */
             @keyframes fadeInUp {
                 from {
@@ -522,7 +564,7 @@
             .login-header { animation: fadeInUp 0.5s ease both; }
             .form-group:nth-child(1) { animation: fadeInUp 0.5s ease 0.1s both; }
             .form-group:nth-child(2) { animation: fadeInUp 0.5s ease 0.15s both; }
-            .remember-row { animation: fadeInUp 0.5s ease 0.2s both; }
+            .captcha-group { animation: fadeInUp 0.5s ease 0.2s both; }
             .btn-login { animation: fadeInUp 0.5s ease 0.25s both; }
             .login-footer { animation: fadeInUp 0.5s ease 0.3s both; }
         </style>
@@ -538,7 +580,7 @@
             <div class="brand-content">
                 <img src="{{ asset('images/logo_header.png') }}" alt="Logo" class="brand-logo">
                 <h1 class="brand-title">HAM DAILY <span class="accent">NEWS</span></h1>
-                <p class="brand-subtitle" data-i18n="brand_subtitle">Portal agregasi kegiatan harian dari seluruh Unit Kerja Kementerian Hak Asasi Manusia di Indonesia.</p>
+                <p class="brand-subtitle" data-i18n="brand_subtitle">Portal agregasi kegiatan harian dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja Kementerian Hak Asasi Manusia di Indonesia.</p>
 
                 <div class="brand-features">
                     <div class="brand-feature">
@@ -551,7 +593,7 @@
                         <div class="feature-icon">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M9 17h1"/></svg>
                         </div>
-                        <div class="feature-text" data-i18n="feature_2"><strong>39 Unit Kerja</strong> terintegrasi di seluruh Indonesia</div>
+                        <div class="feature-text" data-i18n="feature_2"><strong>Unit Kerja</strong> terintegrasi di seluruh Indonesia</div>
                     </div>
                     <div class="brand-feature">
                         <div class="feature-icon">
@@ -629,12 +671,29 @@
                         @enderror
                     </div>
 
-                    <div class="remember-row">
-                        <label class="remember-label">
-                            <input type="checkbox" name="remember">
-                            <span data-i18n="remember_me">Ingat saya</span>
-                        </label>
-                        {{-- Forgot Password Removed --}}
+                    <div class="form-group captcha-group">
+                        <label class="form-label">Verifikasi CAPTCHA</label>
+                        <div class="captcha-challenge">
+                            <div class="captcha-question">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                <span>{{ $captcha_question ?? '? + ? = ?' }}</span>
+                            </div>
+                            <div class="input-wrapper">
+                                <input
+                                    id="captcha"
+                                    class="form-input captcha-input"
+                                    type="number"
+                                    name="captcha"
+                                    placeholder="Jawaban"
+                                    required
+                                    autocomplete="off"
+                                    style="padding-left: 14px; text-align: center; font-weight: 700; letter-spacing: 0.1em;"
+                                >
+                            </div>
+                        </div>
+                        @error('captcha')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <button type="submit" class="btn-login">
@@ -663,9 +722,9 @@
     <script>
         const translations = {
             id: {
-                brand_subtitle: 'Portal agregasi kegiatan harian dari seluruh Unit Kerja Kementerian Hak Asasi Manusia di Indonesia.',
+                brand_subtitle: 'Portal agregasi kegiatan harian dari seluruh Unit Kerja, Kantor Wilayah, dan Wilayah Kerja Kementerian Hak Asasi Manusia di Indonesia.',
                 feature_1: '<strong>Lapor kegiatan</strong> langsung dari media sosial resmi',
-                feature_2: '<strong>39 Unit Kerja</strong> terintegrasi di seluruh Indonesia',
+                feature_2: '<strong>Unit Kerja</strong> terintegrasi di seluruh Indonesia',
                 feature_3: '<strong>Moderasi terpusat</strong> oleh admin pusat',
                 greeting: 'Selamat Datang',
                 login_title: 'Masuk ke akun Anda',
@@ -678,9 +737,9 @@
                 copyright: 'Kementerian Hak Asasi Manusia Republik Indonesia',
             },
             en: {
-                brand_subtitle: 'Daily activity aggregation portal from all Work Units of the Ministry of Human Rights in Indonesia.',
+                brand_subtitle: 'Daily activity aggregation portal from all Work Units, Regional Offices, and Work Areas of the Ministry of Human Rights in Indonesia.',
                 feature_1: '<strong>Report activities</strong> directly from official social media',
-                feature_2: '<strong>39 Work Units</strong> integrated across Indonesia',
+                feature_2: '<strong>Work Units</strong> integrated across Indonesia',
                 feature_3: '<strong>Centralized moderation</strong> by central admin',
                 greeting: 'Welcome',
                 login_title: 'Sign in to your account',

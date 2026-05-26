@@ -52,22 +52,31 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::FOOTER,
                 fn (): HtmlString => new HtmlString('
-                    <div style="
+                    <div class="fi-footer-custom" style="
                         text-align: center;
                         padding: 1.25rem 2rem;
                         font-size: 0.72rem;
-                        color: #94A3B8;
-                        border-top: 1px solid rgba(0,0,0,0.05);
-                        background: rgba(248,250,252,0.6);
+                        border-top: 1px solid var(--fi-color-gray-200);
                         letter-spacing: 0.02em;
                         font-family: Inter, -apple-system, sans-serif;
                     ">
-                        &copy; ' . date('Y') . ' <span style="font-weight: 700; color: #0A2B6B;">HAMDANS</span> &mdash; Kementerian Hak Asasi Manusia Republik Indonesia
+                        &copy; ' . date('Y') . ' <span style="font-weight: 700; color: var(--fi-color-primary-600);">HAMDANS</span> &mdash; <span style="color: var(--fi-color-gray-500);">Kementerian Hak Asasi Manusia Republik Indonesia</span>
                     </div>
+                    <style>
+                        .dark .fi-footer-custom {
+                            border-top-color: var(--fi-color-gray-800) !important;
+                            background: rgba(24, 24, 27, 0.6) !important;
+                        }
+                        html:not(.dark) .fi-footer-custom {
+                            border-top-color: rgba(0,0,0,0.05) !important;
+                            background: rgba(248,250,252,0.6) !important;
+                        }
+                    </style>
                 ')
             )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->profile(\App\Filament\Pages\EditProfile::class)
             ->pages([
                 Pages\Dashboard::class,
             ])

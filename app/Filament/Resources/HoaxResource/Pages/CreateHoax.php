@@ -11,7 +11,9 @@ class CreateHoax extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['user_id'] = auth()->id();
+        $user = auth()->user();
+        $data['user_id'] = $user->id;
+        $data['office_id'] = $user->office_id;
 
         if (!empty($data['is_published']) && empty($data['published_at'])) {
             $data['published_at'] = now();
